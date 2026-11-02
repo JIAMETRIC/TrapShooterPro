@@ -33,7 +33,7 @@ Legend: ✅ done and verified in CI · 🟡 built and unit‑tested in CI; the g
 | CI green on `main` (fixtures, `swift test`, simulator build and tests) | ✅ |
 | CI failure lines published as annotations (logs need sign‑in) | ✅ |
 | `TrapDesign` tokens, components, breakpoints | ✅ |
-| Design preview rendered light and dark | ✅ rendered light, dark and AX3 on the Mac, 2026‑11‑02; Dynamic Type accessibility sizes and Reduce Motion not met, see `docs/mac-sessions/2026-11-02.md` |
+| Design preview rendered light and dark | ✅ rendered light, dark and AX3 on the Mac, 2026‑11‑02; Dynamic Type at AX3 and Reduce Motion fixed the same day, see `docs/mac-sessions/2026-11-02.md` |
 
 ## Phase 2 — Domain core (`TrapCore`) ✅
 
@@ -72,7 +72,7 @@ Legend: ✅ done and verified in CI · 🟡 built and unit‑tested in CI; the g
 | `RecordModel`, `TimingFlow` (7.0.7 range flow), lifecycle, kill‑and‑resume | 🟡 |
 | Record screen | 🟡 Mac simulator verified 2026‑11‑02 (iPad portrait layout fixed); device and VoiceOver checks open |
 | Timer screen | 🟡 Mac simulator verified 2026‑11‑02 (screen only, no timing); device checks open |
-| iPhone tabs, iPad split, keyboard, VoiceOver, Dynamic Type | 🟡 tabs and iPad split verified in the simulator 2026‑11‑02; keyboard, VoiceOver, Dynamic Type (AX3 defects) and Split View open |
+| iPhone tabs, iPad split, keyboard, VoiceOver, Dynamic Type | 🟡 tabs and iPad split verified in the simulator 2026‑11‑02; Dynamic Type at AX3 checked in the simulator; keyboard, VoiceOver and Split View open |
 | Range flow tested through a scripted timer (`RecordFlowTests`; `TrapShooterProUITests` on screen through `DemoTimer -uitest`, accessibility identifiers `screen.element.name`) | 🟡 `ui-test` passes on the Mac 2026‑11‑02 |
 | Full round on a real range; kill‑and‑resume on device | ⏳ range |
 
@@ -81,8 +81,8 @@ Legend: ✅ done and verified in CI · 🟡 built and unit‑tested in CI; the g
 | Deliverable | State |
 |---|---|
 | Rounds list (search, chips, paging, delete with undo, iPad master‑detail) | 🟡 Mac simulator verified 2026‑11‑02; device checks open |
-| Analysis (tiles, trends, tables, trap analysis) | 🟡 Mac simulator verified 2026‑11‑02; AX3 header and tile defects open |
-| Schemes table | 🟡 Mac simulator verified 2026‑11‑02 (cell wrap fixed); AX3 header clipping open |
+| Analysis (tiles, trends, tables, trap analysis) | 🟡 Mac simulator verified 2026‑11‑02; AX3 headers and tiles fixed |
+| Schemes table | 🟡 Mac simulator verified 2026‑11‑02 (cell wrap fixed); AX3 headers fixed |
 | Exports through `ExporterFactory` and the share sheet, temp files removed | 🟡 |
 | Performance gates on device | ⏳ iPhone |
 
