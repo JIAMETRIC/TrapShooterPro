@@ -47,6 +47,7 @@ private struct RoundHeader: View {
         HStack(alignment: .top) {
             VStack(alignment: .leading, spacing: BWMetrics.s1) {
                 Text(r.sessionId.isEmpty ? "New round" : r.sessionId).bwDisplay(.title3)
+                    .lineLimit(1).minimumScaleFactor(0.5)                  // an id never breaks mid-way
                 Text("\(r.date) · \(r.startTime) · Scheme \(r.scheme) · \(r.type)")
                     .font(BWFont.secondary).foregroundStyle(BW.textSecondary)
             }
@@ -309,6 +310,8 @@ private struct EntryPanel: View {
                 Text(title).font(BWFont.body.weight(.bold))
                 Text(sub).font(BWFont.note)
             }
+            .lineLimit(1).minimumScaleFactor(0.5)                          // "Straight" shrinks before it breaks
+            .padding(.horizontal, BWMetrics.s1)
             .foregroundStyle(selected ? status.foreground : BW.text)
             .frame(maxWidth: .infinity, minHeight: breakpoint.minTouchTarget + BWMetrics.s4)
             .background(selected ? status.background : BW.paper, in: RoundedRectangle(cornerRadius: BWMetrics.radiusMD))
@@ -341,7 +344,7 @@ private struct LedgerTable: View {
             BWTableHeader(["#", "Stn", "Dir", "Res", "1st", "2nd", "Break"])
             ForEach(0..<Round.targetCount, id: \.self) { i in
                 Button { model.select(i) } label: {
-                    HStack {
+                    HStack(spacing: 0) {
                         cell("\(i + 1)"); cell("\(r.station(at: i))"); cell(r.directions[i]?.rawValue ?? "–")
                         cell(r.results[i]?.rawValue ?? "–", color: r.results[i]?.status.foreground)
                         cell(secondsText(r.firstShot[i])); cell(secondsText(r.secondShot[i]))
@@ -360,8 +363,7 @@ private struct LedgerTable: View {
     }
 
     private func cell(_ t: String, color: Color? = nil) -> some View {
-        Text(t).font(BWFont.value(.footnote, weight: .regular)).foregroundStyle(color ?? BW.text)
-            .frame(maxWidth: .infinity, alignment: .leading)
+        Text(t).font(BWFont.value(.footnote, weight: .regular)).foregroundStyle(color ?? BW.text).bwTableCell()
     }
 }
 

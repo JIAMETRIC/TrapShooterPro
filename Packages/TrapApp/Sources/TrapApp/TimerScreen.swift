@@ -157,6 +157,9 @@ private struct LevelMeter: View {
     let peak: Double?
     let callDb: Double
     let shotDb: Double
+    /// Label and dB columns grow with Dynamic Type, so "PEAK" and "-100 dB" never clip; both rows share them.
+    @ScaledMetric(relativeTo: .caption) private var labelWidth: CGFloat = 44
+    @ScaledMetric(relativeTo: .caption) private var valueWidth: CGFloat = 56
 
     var body: some View {
         VStack(alignment: .leading, spacing: BWMetrics.s1) {
@@ -169,7 +172,7 @@ private struct LevelMeter: View {
         let lo = 40.0, hi = 140.0
         let f = { (x: Double) in CGFloat(min(1, max(0, (x - lo) / (hi - lo)))) }
         return HStack(spacing: BWMetrics.s2) {
-            Text(label).bwLabel().frame(width: 44, alignment: .leading)
+            Text(label).bwLabel().frame(width: labelWidth, alignment: .leading)
             GeometryReader { g in
                 ZStack(alignment: .leading) {
                     Rectangle().fill(BW.surfaceAlt)
@@ -178,7 +181,7 @@ private struct LevelMeter: View {
                 }
             }
             .frame(height: 10)
-            Text(v.map { "\(Int($0)) dB" } ?? "–").font(BWFont.value(.caption, weight: .regular)).frame(width: 56, alignment: .trailing)
+            Text(v.map { "\(Int($0)) dB" } ?? "–").font(BWFont.value(.caption, weight: .regular)).frame(width: valueWidth, alignment: .trailing)
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("\(label) level " + (v.map { "\(Int($0)) decibels" } ?? "none"))

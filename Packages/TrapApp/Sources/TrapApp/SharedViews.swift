@@ -29,6 +29,8 @@ struct ScoreStrip: View {
                 Button { onSelect?(i) } label: {
                     Text(round.directions[i]?.rawValue ?? "")
                         .font(BWFont.label)
+                        .lineLimit(1).minimumScaleFactor(0.5)              // 25 tiles in a row: the letter must fit
+                        .dynamicTypeSize(...DynamicTypeSize.xxLarge)
                         .foregroundStyle(r?.status.foreground ?? BW.textMuted)
                         .frame(maxWidth: .infinity, minHeight: 28)
                         .background(r?.status.background ?? BW.surfaceAlt, in: RoundedRectangle(cornerRadius: BWMetrics.radiusXS))

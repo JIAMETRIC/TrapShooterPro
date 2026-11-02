@@ -103,7 +103,7 @@ private struct TrapSection: View {
                 }
                 BWTableHeader(["Trap", "Stn", "Angle", "Height", "Shots", "Hit", "Avg 1st"])
                 ForEach(Array(analysis.traps.enumerated()), id: \.offset) { k, t in
-                    HStack {
+                    HStack(spacing: 0) {
                         cell("\(t.number)"); cell("\(t.station)"); cell(Analysis.angleLabel(t.label)); cell(Analysis.heightLabel(t.height))
                         cell("\(t.shots)"); cell(Analysis.percent(t.hits, t.shots)); cell(t.averageTime.map { JSText.fixed($0, 3) } ?? "–")
                     }
@@ -116,7 +116,7 @@ private struct TrapSection: View {
     }
 
     private func cell(_ t: String) -> some View {
-        Text(t).font(BWFont.value(.footnote, weight: .regular)).frame(maxWidth: .infinity, alignment: .leading)
+        Text(t).font(BWFont.value(.footnote, weight: .regular)).bwTableCell()
     }
 }
 
@@ -129,8 +129,8 @@ private struct TableCard: View {
             BWSectionLabel(table.title).padding(.bottom, BWMetrics.s2)
             BWTableHeader(["", "Targets", "Hit", "1st barrel"])
             ForEach(Array(table.rows.enumerated()), id: \.offset) { k, r in
-                HStack {
-                    Text(r.key).font(BWFont.secondary).frame(maxWidth: .infinity, alignment: .leading)
+                HStack(spacing: 0) {
+                    Text(r.key).font(BWFont.secondary).bwTableCell()
                     cell("\(r.targets)"); cell(Analysis.percent(r.hits, r.targets)); cell(Analysis.percent(r.firstShotHits, r.targets))
                 }
                 .padding(.vertical, BWMetrics.s2)
@@ -140,6 +140,6 @@ private struct TableCard: View {
         .bwCard()
     }
     private func cell(_ t: String) -> some View {
-        Text(t).font(BWFont.value(.footnote, weight: .regular)).frame(maxWidth: .infinity, alignment: .leading)
+        Text(t).font(BWFont.value(.footnote, weight: .regular)).bwTableCell()
     }
 }
