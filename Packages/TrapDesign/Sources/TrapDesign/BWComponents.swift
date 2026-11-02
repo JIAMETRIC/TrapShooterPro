@@ -198,7 +198,7 @@ public struct BWDestructiveButtonStyle: ButtonStyle {
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.subheadline.weight(.semibold))
-            .foregroundStyle(.white)
+            .foregroundStyle(BW.onDestructive)
             .frame(maxWidth: .infinity, minHeight: BWMetrics.actionHeight)
             .background(BW.destructive, in: RoundedRectangle(cornerRadius: BWMetrics.radiusMD, style: .continuous))
             .opacity(configuration.isPressed ? BWMotion.pressedOpacity : 1)

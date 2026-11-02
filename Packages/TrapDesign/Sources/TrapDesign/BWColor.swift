@@ -80,7 +80,10 @@ public enum BW {
     /// Lost (R).
     public static let lost = danger
     /// Destructive button (`.btn-danger-red` #DC3545).
-    public static let destructive = Color.dynamic(light: 0xDC3545, dark: 0xEF4444)
+    /// Dark fill is red-600, not red-500: white text on it needs 4.5:1 (≈4.8:1 here; red-500 gave ≈3.8:1).
+    public static let destructive = Color.dynamic(light: 0xDC3545, dark: 0xDC2626)
+    /// Text on `destructive`, white in both appearances.
+    public static let onDestructive = Color(hex: 0xFFFFFF)
 }
 
 public extension Color {

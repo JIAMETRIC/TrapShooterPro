@@ -176,7 +176,7 @@ private struct LevelMeter: View {
             GeometryReader { g in
                 ZStack(alignment: .leading) {
                     Rectangle().fill(BW.surfaceAlt)
-                    Rectangle().fill((v ?? 0) >= mark ? BW.ink : BW.grey400).frame(width: g.size.width * f(v ?? lo))
+                    Rectangle().fill((v ?? 0) >= mark ? BW.ink : BW.textMuted).frame(width: g.size.width * f(v ?? lo))
                     Rectangle().fill(BW.danger.dot).frame(width: 2).offset(x: g.size.width * f(mark))
                 }
             }

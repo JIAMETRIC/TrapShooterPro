@@ -63,7 +63,7 @@ Shooting domain mapping (keeps the G / Y / R meaning of the web app):
 | Hit with the first shot (G) | `BW.hitFirst` = success |
 | Hit with the second shot (Y) | `BW.hitSecond` = warning |
 | Lost (R) | `BW.lost` = danger |
-| Delete, NO TARGET | `BW.destructive` `#DC3545` (`#EF4444` dark) |
+| Delete, NO TARGET | `BW.destructive` `#DC3545` (`#DC2626` dark, for 4.5:1 with white `BW.onDestructive`) |
 | Timer armed / listening | ink pill, success dot when audio is flowing |
 
 ## 4. Typography
