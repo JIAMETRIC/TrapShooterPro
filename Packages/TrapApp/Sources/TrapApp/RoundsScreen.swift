@@ -94,7 +94,7 @@ struct RoundsScreen: View {
 private struct RoundsList: View {
     @Bindable var model: RoundsModel
     @Binding var selected: String?
-    @Environment(\.breakpoint) private var breakpoint
+    @Environment(\.splitActive) private var splitActive
 
     var body: some View {
         List {
@@ -127,7 +127,7 @@ private struct RoundsList: View {
     }
 
     @ViewBuilder private func rowLink(_ row: RoundSummary) -> some View {
-        if breakpoint.isSplit {
+        if splitActive {
             Button { selected = row.id } label: { RoundRow(row: row, selected: selected == row.id) }.buttonStyle(.plain)
         } else {
             NavigationLink(value: row.id) { RoundRow(row: row, selected: false) }

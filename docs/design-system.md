@@ -24,7 +24,7 @@ Code: `Packages/TrapDesign` (SwiftUI). This document is the mapping and the reas
 | Modal boxes, 14 px radius, dark header | **Sheets** with `presentationCornerRadius(14)` and an ink header panel | Native presentation, same look. |
 | Table headers in ink with white uppercase text | Same, built as a SwiftUI row | Keeps the signature table look for ledgers and scheme tables. |
 | Letter‑spacing on body text | Tracking only on display and labels | SF is already tuned; tracking body text hurts legibility. |
-| CSS transitions | `BWMotion` animations, `Reduce Motion` respected | Same durations and curves. |
+| CSS transitions | `BWMotion` animations, `Reduce Motion` respected | Same durations and curves. Under Reduce Motion `bwPressEffect` drops the pressed scale; colour and opacity still fade. |
 
 ## 3. Colour tokens
 
@@ -40,7 +40,7 @@ Light values are from `login.css` (the zinc scale). Dark values read the same sc
 | `BW.borderStrong` | grey‑300: control borders | `#D4D4D8` | `#52525B` |
 | `BW.text` | grey‑900 | `#18181B` | `#F4F4F5` |
 | `BW.textSecondary` | grey‑700: field labels | `#3F3F46` | `#D4D4D8` |
-| `BW.textMuted` | `--clr-muted` grey‑500 | `#71717A` | `#A1A1AA` |
+| `BW.textMuted` | `--clr-muted` grey‑500, a shade darker for 4.5:1 on `surface` | `#6B6B73` | `#A1A1AA` |
 | `BW.onInk` | text on ink | `#FFFFFF` | `#000000` |
 | `BW.inkOverlay(α)` | `rgba(255,255,255,α)` fills on black panels | white α | black α |
 
@@ -63,7 +63,7 @@ Shooting domain mapping (keeps the G / Y / R meaning of the web app):
 | Hit with the first shot (G) | `BW.hitFirst` = success |
 | Hit with the second shot (Y) | `BW.hitSecond` = warning |
 | Lost (R) | `BW.lost` = danger |
-| Delete, NO TARGET | `BW.destructive` `#DC3545` (`#EF4444` dark) |
+| Delete, NO TARGET | `BW.destructive` `#DC3545` (`#DC2626` dark, for 4.5:1 with white `BW.onDestructive`) |
 | Timer armed / listening | ink pill, success dot when audio is flowing |
 
 ## 4. Typography
@@ -122,6 +122,11 @@ Shooting domain mapping (keeps the G / Y / R meaning of the web app):
 | < 600 pt | `.phone` | one column | 44 pt | tab bar |
 | 600 to 1099 pt (8" iPad, Split View) | `.tabletSmall` | master‑detail 40 / 60 | 48 pt | sidebar 180 pt or tab bar |
 | ≥ 1100 pt (11" and 13" iPad landscape) | `.tabletLarge` | master‑detail 35 / 65, three columns where useful | 48 pt | sidebar 220 pt |
+
+The breakpoint is the window; a split lives in the space it is given. Beside the sidebar, `AdaptiveSplit` puts
+master and detail side by side only when the master column gets at least a phone's width (375 pt), so an 8" iPad
+and a 13" iPad in portrait show Record and Rounds as one column, as on a phone; `\.splitActive` tells rows whether
+to select or push.
 
 `BreakpointReader` at the root publishes `\.breakpoint`; `AdaptiveSplit` lays out master and detail; `BWKeys` holds
 the hardware‑keyboard shortcuts (Space start/stop, 1 2 3 directions, G Y R results, N no target, ⌘Z undo, arrows

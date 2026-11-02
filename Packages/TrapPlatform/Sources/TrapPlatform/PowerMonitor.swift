@@ -34,7 +34,10 @@ public final class PowerMonitor {
 
     @ObservationIgnored private var observers: [NSObjectProtocol] = []
 
-    public init(device: UIDevice = .current, processInfo: ProcessInfo = .processInfo) {
+    /// `device` defaults to `UIDevice.current`, resolved here rather than as a default argument value: default values
+    /// are evaluated outside the main actor, and `UIDevice.current` is main-actor isolated.
+    public init(device: UIDevice? = nil, processInfo: ProcessInfo = .processInfo) {
+        let device = device ?? .current
         device.isBatteryMonitoringEnabled = true
         let center = NotificationCenter.default
         for name in [UIDevice.batteryLevelDidChangeNotification, UIDevice.batteryStateDidChangeNotification,
@@ -46,7 +49,8 @@ public final class PowerMonitor {
         refresh(device: device, processInfo: processInfo)
     }
 
-    public func refresh(device: UIDevice = .current, processInfo: ProcessInfo = .processInfo) {
+    public func refresh(device: UIDevice? = nil, processInfo: ProcessInfo = .processInfo) {
+        let device = device ?? .current
         batteryLevel = device.batteryLevel
         batteryState = device.batteryState
         isLowPowerMode = processInfo.isLowPowerModeEnabled

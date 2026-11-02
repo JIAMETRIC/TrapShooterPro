@@ -136,12 +136,28 @@ private struct InputPicker: View {
 
     var body: some View {
         let timer = model.timer
-        Picker("Input", selection: Binding(get: { app.settings.preferredInputID }, set: { v in app.update { $0.preferredInputID = v } })) {
-            Text(timer.inputs.contains(where: \.isReferenceReceiver) ? "System default (\(ReferenceReceiver.name))" : "System default").tag("")
-            ForEach(timer.inputs) { i in
-                Text(i.isReferenceReceiver ? "\(ReferenceReceiver.name) receiver" : i.label).tag(i.id)
+        let options: [(id: String, title: String)] =
+            [("", timer.inputs.contains(where: \.isReferenceReceiver) ? "System default (\(ReferenceReceiver.name))" : "System default")]
+            + timer.inputs.map { ($0.id, $0.isReferenceReceiver ? "\(ReferenceReceiver.name) receiver" : $0.label) }
+        let selected = options.first { $0.id == app.settings.preferredInputID }?.title ?? options[0].title
+        // A Menu with its own label, not a menu-style Picker: the system label keeps one line's height and clips a
+        // two-line input name at accessibility text sizes.
+        Menu {
+            Picker("Input", selection: Binding(get: { app.settings.preferredInputID }, set: { v in app.update { $0.preferredInputID = v } })) {
+                ForEach(options, id: \.id) { Text($0.title).tag($0.id) }
             }
+        } label: {
+            HStack(spacing: BWMetrics.s2) {
+                Text(selected).multilineTextAlignment(.leading)
+                Spacer(minLength: 0)
+                Image(systemName: "chevron.up.chevron.down").font(BWFont.note)
+            }
+            .foregroundStyle(timer.isRunning ? BW.textMuted : BW.ink)
+            .frame(minHeight: BWMetrics.actionHeight)
+            .contentShape(Rectangle())
         }
+        .accessibilityLabel("Input")
+        .accessibilityValue(selected)
         .disabled(timer.isRunning)
         if timer.isRunning {
             Text("In use: " + (timer.route.isReferenceReceiver ? "\(ReferenceReceiver.name) receiver" : timer.route.label))
@@ -157,6 +173,9 @@ private struct LevelMeter: View {
     let peak: Double?
     let callDb: Double
     let shotDb: Double
+    /// Label and dB columns grow with Dynamic Type, so "PEAK" and "-100 dB" never clip; both rows share them.
+    @ScaledMetric(relativeTo: .caption) private var labelWidth: CGFloat = 44
+    @ScaledMetric(relativeTo: .caption) private var valueWidth: CGFloat = 56
 
     var body: some View {
         VStack(alignment: .leading, spacing: BWMetrics.s1) {
@@ -169,16 +188,16 @@ private struct LevelMeter: View {
         let lo = 40.0, hi = 140.0
         let f = { (x: Double) in CGFloat(min(1, max(0, (x - lo) / (hi - lo)))) }
         return HStack(spacing: BWMetrics.s2) {
-            Text(label).bwLabel().frame(width: 44, alignment: .leading)
+            Text(label).bwLabel().frame(width: labelWidth, alignment: .leading)
             GeometryReader { g in
                 ZStack(alignment: .leading) {
                     Rectangle().fill(BW.surfaceAlt)
-                    Rectangle().fill((v ?? 0) >= mark ? BW.ink : BW.grey400).frame(width: g.size.width * f(v ?? lo))
+                    Rectangle().fill((v ?? 0) >= mark ? BW.ink : BW.textMuted).frame(width: g.size.width * f(v ?? lo))
                     Rectangle().fill(BW.danger.dot).frame(width: 2).offset(x: g.size.width * f(mark))
                 }
             }
             .frame(height: 10)
-            Text(v.map { "\(Int($0)) dB" } ?? "–").font(BWFont.value(.caption, weight: .regular)).frame(width: 56, alignment: .trailing)
+            Text(v.map { "\(Int($0)) dB" } ?? "–").font(BWFont.value(.caption, weight: .regular)).frame(width: valueWidth, alignment: .trailing)
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("\(label) level " + (v.map { "\(Int($0)) decibels" } ?? "none"))

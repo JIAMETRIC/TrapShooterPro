@@ -123,16 +123,10 @@ private struct Sidebar: View {
 @MainActor
 struct SectionScreen: View {
     let section: AppSection
-    @Environment(\.breakpoint) private var breakpoint
 
     var body: some View {
         switch section {
-        case .record:
-            if breakpoint.isSplit {
-                AdaptiveSplit { RecordScreen() } detail: { TimerScreen() }
-            } else {
-                RecordScreen()
-            }
+        case .record: AdaptiveSplit { RecordScreen() } detail: { TimerScreen() }
         case .timer: TimerScreen()
         case .rounds: RoundsScreen()
         case .analysis: AnalysisScreen()

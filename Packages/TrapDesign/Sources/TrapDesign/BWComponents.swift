@@ -111,7 +111,11 @@ public struct BWKPITile: View {
             Text(label).bwLabel(color: BW.textMuted)
             HStack(alignment: .firstTextBaseline, spacing: 3) {
                 Text(value).font(BWFont.valueLarge).foregroundStyle(BW.ink).tracking(-0.5)
-                if let unit { Text(unit).font(.caption.weight(.semibold)).textCase(.uppercase).tracking(BWTracking.label).foregroundStyle(BW.textMuted) }
+                    .lineLimit(1).minimumScaleFactor(0.5)                  // a number never breaks across lines
+                if let unit {
+                    Text(unit).font(.caption.weight(.semibold)).textCase(.uppercase).tracking(BWTracking.label).foregroundStyle(BW.textMuted)
+                        .fixedSize()
+                }
             }
             if let sub { Text(sub).font(.caption).foregroundStyle(BW.textMuted) }
         }
@@ -152,7 +156,7 @@ public struct BWPill: View {
         .padding(.vertical, 5)
         .background(status.background, in: Capsule())
         .overlay(Capsule().strokeBorder(status.border, lineWidth: BWMetrics.stroke))
-        .lineLimit(1)
+        .fixedSize()                                                       // full text at every size; never "H…"
     }
 }
 
@@ -169,8 +173,7 @@ public struct BWPrimaryButtonStyle: ButtonStyle {
             .frame(maxWidth: .infinity, minHeight: height)
             .background(BW.ink, in: RoundedRectangle(cornerRadius: BWMetrics.radiusMD, style: .continuous))
             .opacity(configuration.isPressed ? BWMotion.pressedOpacity : 1)
-            .scaleEffect(configuration.isPressed ? BWMotion.pressedScale : 1)
-            .animation(BWMotion.fast, value: configuration.isPressed)
+            .bwPressEffect(configuration.isPressed)
     }
 }
 
@@ -185,8 +188,7 @@ public struct BWSecondaryButtonStyle: ButtonStyle {
             .frame(maxWidth: .infinity, minHeight: height)
             .background(configuration.isPressed ? BW.surface : BW.paper, in: RoundedRectangle(cornerRadius: BWMetrics.radiusMD, style: .continuous))
             .overlay(RoundedRectangle(cornerRadius: BWMetrics.radiusMD, style: .continuous).strokeBorder(configuration.isPressed ? BW.ink : BW.borderStrong, lineWidth: BWMetrics.stroke))
-            .scaleEffect(configuration.isPressed ? BWMotion.pressedScale : 1)
-            .animation(BWMotion.fast, value: configuration.isPressed)
+            .bwPressEffect(configuration.isPressed)
     }
 }
 
@@ -196,12 +198,11 @@ public struct BWDestructiveButtonStyle: ButtonStyle {
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.subheadline.weight(.semibold))
-            .foregroundStyle(.white)
+            .foregroundStyle(BW.onDestructive)
             .frame(maxWidth: .infinity, minHeight: BWMetrics.actionHeight)
             .background(BW.destructive, in: RoundedRectangle(cornerRadius: BWMetrics.radiusMD, style: .continuous))
             .opacity(configuration.isPressed ? BWMotion.pressedOpacity : 1)
-            .scaleEffect(configuration.isPressed ? BWMotion.pressedScale : 1)
-            .animation(BWMotion.fast, value: configuration.isPressed)
+            .bwPressEffect(configuration.isPressed)
     }
 }
 
@@ -222,6 +223,19 @@ public struct BWIconButtonStyle: ButtonStyle {
     }
 }
 
+/// The pressed shrink of the filled and outlined buttons. Under Reduce Motion the button does not move; the colour
+/// and opacity change still fade.
+public struct BWPressEffect: ViewModifier {
+    let isPressed: Bool
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    public func body(content: Content) -> some View {
+        content
+            .scaleEffect(isPressed && !reduceMotion ? BWMotion.pressedScale : 1)
+            .animation(BWMotion.fast, value: isPressed)
+    }
+}
+public extension View { func bwPressEffect(_ isPressed: Bool) -> some View { modifier(BWPressEffect(isPressed: isPressed)) } }
+
 public extension ButtonStyle where Self == BWPrimaryButtonStyle { static var bwPrimary: BWPrimaryButtonStyle { BWPrimaryButtonStyle() } }
 public extension ButtonStyle where Self == BWSecondaryButtonStyle { static var bwSecondary: BWSecondaryButtonStyle { BWSecondaryButtonStyle() } }
 public extension ButtonStyle where Self == BWDestructiveButtonStyle { static var bwDestructive: BWDestructiveButtonStyle { BWDestructiveButtonStyle() } }
@@ -236,8 +250,7 @@ public struct BWTableHeader: View {
     public var body: some View {
         HStack(spacing: 0) {
             ForEach(Array(columns.enumerated()), id: \.offset) { _, c in
-                Text(c).font(.caption2.weight(.bold)).textCase(.uppercase).tracking(0.8)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                Text(c).font(.caption2.weight(.bold)).textCase(.uppercase).tracking(0.8).bwTableCell()
             }
         }
         .foregroundStyle(BW.onInk)
@@ -257,6 +270,20 @@ public struct BWTableRowModifier: ViewModifier {
     }
 }
 public extension View { func bwTableRow(index: Int) -> some View { modifier(BWTableRowModifier(index: index)) } }
+
+/// One column of a table row or header: equal share of the width, one line, shrinking to fit before it would wrap
+/// or clip. Rows put cells in `HStack(spacing: 0)` so they sit on the header's grid. Text stops growing at the
+/// largest standard size: seven columns on a phone cannot hold accessibility sizes ("32.4 m" truncated at AX1).
+public struct BWTableCellModifier: ViewModifier {
+    public func body(content: Content) -> some View {
+        content
+            .lineLimit(1).minimumScaleFactor(0.5)
+            .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
+            .padding(.trailing, BWMetrics.s1)
+            .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+public extension View { func bwTableCell() -> some View { modifier(BWTableCellModifier()) } }
 
 // MARK: Ink panel
 
@@ -299,18 +326,16 @@ public struct BWInkPanel<Content: View>: View {
                 BWKPITile("Score", value: "22", unit: "/25", sub: "88.0%")
                 BWKPITile("1st shot", value: "0.684", unit: "s", sub: "average")
             }
-            HStack(spacing: BWMetrics.s2) {
-                BWPill("Hit 1st", status: BW.hitFirst, dot: true)
-                BWPill("Hit 2nd", status: BW.hitSecond, dot: true)
-                BWPill("Lost", status: BW.lost, dot: true)
-                BWPill("Armed", status: BW.inkStatus)
+            ViewThatFits {                                                 // one row, or a column at large text sizes
+                HStack(spacing: BWMetrics.s2) { previewPills }
+                VStack(alignment: .leading, spacing: BWMetrics.s2) { previewPills }
             }
             VStack(spacing: 0) {
                 BWTableHeader(["#", "Stn", "Dir", "Result", "1st s"])
                 ForEach(0..<3, id: \.self) { i in
                     HStack(spacing: 0) {
                         ForEach(Array(["\(i + 1)", "\(i + 1)", "L", "G", "0.6\(i)"].enumerated()), id: \.offset) { _, c in
-                            Text(c).font(BWFont.value(.caption)).frame(maxWidth: .infinity, alignment: .leading)
+                            Text(c).font(BWFont.value(.caption)).bwTableCell()
                         }
                     }
                     .bwTableRow(index: i)
@@ -333,4 +358,11 @@ public struct BWInkPanel<Content: View>: View {
         .padding(BWMetrics.gutter)
     }
     .background(BW.surface)
+}
+
+@ViewBuilder private var previewPills: some View {
+    BWPill("Hit 1st", status: BW.hitFirst, dot: true)
+    BWPill("Hit 2nd", status: BW.hitSecond, dot: true)
+    BWPill("Lost", status: BW.lost, dot: true)
+    BWPill("Armed", status: BW.inkStatus)
 }

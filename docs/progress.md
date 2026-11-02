@@ -4,7 +4,7 @@ One line per deliverable, updated with every commit that changes one. Plan and e
 Legend: ✅ done and verified in CI · 🟡 built and unit‑tested in CI; the gate's device, range or Mac check still to do ·
 🔨 in progress · ⏳ waiting on the owner (recordings, iPhone, range, Mac, Apple account) · ⬜ not started.
 
-*Last updated: 24 October 2026*
+*Last updated: 2 November 2026*
 
 > **Correction (22 October 2026, `d4852de`).** Until this commit the iOS CI job could not fail: `xcodebuild | xcpretty`
 > ran without `pipefail`, so a step passed whatever xcodebuild did. Everything that only that job checked (the app build;
@@ -33,7 +33,7 @@ Legend: ✅ done and verified in CI · 🟡 built and unit‑tested in CI; the g
 | CI green on `main` (fixtures, `swift test`, simulator build and tests) | ✅ |
 | CI failure lines published as annotations (logs need sign‑in) | ✅ |
 | `TrapDesign` tokens, components, breakpoints | ✅ |
-| Design preview rendered light and dark | ⏳ Mac |
+| Design preview rendered light and dark | ✅ rendered light, dark and AX3 on the Mac, 2026‑11‑02; Dynamic Type at AX3 and Reduce Motion fixed the same day, see `docs/mac-sessions/2026-11-02.md` |
 
 ## Phase 2 — Domain core (`TrapCore`) ✅
 
@@ -70,19 +70,19 @@ Legend: ✅ done and verified in CI · 🟡 built and unit‑tested in CI; the g
 | Local packages linked into the Xcode project (`TrapApp`, ADR‑017) | ✅ |
 | Native app root replaces the WebView | ✅ |
 | `RecordModel`, `TimingFlow` (7.0.7 range flow), lifecycle, kill‑and‑resume | 🟡 |
-| Record screen | 🟡 |
-| Timer screen | 🟡 |
-| iPhone tabs, iPad split, keyboard, VoiceOver, Dynamic Type | 🟡 |
-| Range flow tested through a scripted timer (`RecordFlowTests`; `TrapShooterProUITests` on screen through `DemoTimer -uitest`, accessibility identifiers `screen.element.name`) | 🟡 |
+| Record screen | 🟡 Mac simulator verified 2026‑11‑02 (iPad portrait layout fixed); device and VoiceOver checks open |
+| Timer screen | 🟡 Mac simulator verified 2026‑11‑02 (screen only, no timing); device checks open |
+| iPhone tabs, iPad split, keyboard, VoiceOver, Dynamic Type | 🟡 tabs and iPad split verified in the simulator 2026‑11‑02; Dynamic Type at AX3 checked in the simulator; keyboard, VoiceOver and Split View open |
+| Range flow tested through a scripted timer (`RecordFlowTests`; `TrapShooterProUITests` on screen through `DemoTimer -uitest`, accessibility identifiers `screen.element.name`) | 🟡 `ui-test` passes on the Mac 2026‑11‑02 |
 | Full round on a real range; kill‑and‑resume on device | ⏳ range |
 
 ## Phase 6 — Rounds, Analysis, Schemes, exporters
 
 | Deliverable | State |
 |---|---|
-| Rounds list (search, chips, paging, delete with undo, iPad master‑detail) | 🟡 |
-| Analysis (tiles, trends, tables, trap analysis) | 🟡 |
-| Schemes table | 🟡 |
+| Rounds list (search, chips, paging, delete with undo, iPad master‑detail) | 🟡 Mac simulator verified 2026‑11‑02; device checks open |
+| Analysis (tiles, trends, tables, trap analysis) | 🟡 Mac simulator verified 2026‑11‑02; AX3 headers and tiles fixed |
+| Schemes table | 🟡 Mac simulator verified 2026‑11‑02 (cell wrap fixed); AX3 headers fixed |
 | Exports through `ExporterFactory` and the share sheet, temp files removed | 🟡 |
 | Performance gates on device | ⏳ iPhone |
 
@@ -90,7 +90,7 @@ Legend: ✅ done and verified in CI · 🟡 built and unit‑tested in CI; the g
 
 | Deliverable | State |
 |---|---|
-| Settings, Data, About screens | 🟡 |
+| Settings, Data, About screens | 🟡 Mac simulator verified 2026‑11‑02; device checks open |
 | Lifecycle, power, network, reminder, MetricKit wired | 🟡 |
 | `Web/`, Supabase and hybrid Swift files deleted; 7.0.7 page kept only as the golden reference in `Tools/golden/reference/` | ✅ |
 | Backup → reinstall → restore on device | ⏳ iPhone |

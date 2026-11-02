@@ -36,7 +36,8 @@ public enum BW {
     /// Secondary text and field labels (grey-700).
     public static let textSecondary = Color.dynamic(light: 0x3F3F46, dark: 0xD4D4D8)
     /// Muted text, units, hints (`--clr-muted`, grey-500).
-    public static let textMuted = Color.dynamic(light: 0x71717A, dark: 0xA1A1AA)
+    /// Light is a shade under grey-500: #71717A gave 4.4:1 on `surface`; #6B6B73 gives 4.8:1 (5.3:1 on `paper`).
+    public static let textMuted = Color.dynamic(light: 0x6B6B73, dark: 0xA1A1AA)
     /// Text on an ink fill.
     public static let onInk = Color.dynamic(light: 0xFFFFFF, dark: 0x000000)
     /// Translucent fills on ink panels (`rgba(255,255,255,0.10)` on black).
@@ -80,7 +81,10 @@ public enum BW {
     /// Lost (R).
     public static let lost = danger
     /// Destructive button (`.btn-danger-red` #DC3545).
-    public static let destructive = Color.dynamic(light: 0xDC3545, dark: 0xEF4444)
+    /// Dark fill is red-600, not red-500: white text on it needs 4.5:1 (≈4.8:1 here; red-500 gave ≈3.8:1).
+    public static let destructive = Color.dynamic(light: 0xDC3545, dark: 0xDC2626)
+    /// Text on `destructive`, white in both appearances.
+    public static let onDestructive = Color(hex: 0xFFFFFF)
 }
 
 public extension Color {

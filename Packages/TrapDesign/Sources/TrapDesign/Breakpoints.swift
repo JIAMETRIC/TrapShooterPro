@@ -41,25 +41,52 @@ public struct BreakpointReader<Content: View>: View {
     }
 }
 
+private struct SplitActiveKey: EnvironmentKey { static let defaultValue = false }
+public extension EnvironmentValues {
+    /// True below an `AdaptiveSplit` that shows master and detail side by side; false when it shows the master
+    /// alone and the detail has to be pushed with navigation.
+    var splitActive: Bool {
+        get { self[SplitActiveKey.self] }
+        set { self[SplitActiveKey.self] = newValue }
+    }
+}
+
 /// Master‑detail on tablets, master only on phones (the caller pushes the detail with navigation there).
+///
+/// The breakpoint describes the window, but the split lives in whatever space it is given: beside an iPad sidebar
+/// that is the window minus the sidebar. It splits only when the master column would be at least as wide as the
+/// narrowest phone layout; otherwise it shows the master alone, as on a phone. Children read `\.splitActive`.
 public struct AdaptiveSplit<Master: View, Detail: View>: View {
+    /// The narrowest supported phone width (iPhone SE, iPhone mini): every master screen is laid out for it.
+    public static var minMasterWidth: CGFloat { 375 }
+
+    /// Whether a split of `width` points shows master and detail side by side.
+    public static func splits(width: CGFloat, breakpoint: Breakpoint) -> Bool {
+        breakpoint.isSplit && width * breakpoint.masterFraction >= minMasterWidth
+    }
+
     @Environment(\.breakpoint) private var breakpoint
     let master: Master
     let detail: Detail
     public init(@ViewBuilder master: () -> Master, @ViewBuilder detail: () -> Detail) {
         self.master = master(); self.detail = detail()
     }
-    public var body: some View {
-        if breakpoint.isSplit {
+    @ViewBuilder public var body: some View {
+        if !breakpoint.isSplit {
+            master                                                  // phone: same view tree as before, no reader
+        } else {
             GeometryReader { geo in
-                HStack(spacing: 0) {
-                    master.frame(width: (geo.size.width * breakpoint.masterFraction).rounded())
-                    Rectangle().fill(BW.border).frame(width: BWMetrics.hairline)
-                    detail.frame(maxWidth: .infinity, maxHeight: .infinity)
+                if Self.splits(width: geo.size.width, breakpoint: breakpoint) {
+                    HStack(spacing: 0) {
+                        master.frame(width: (geo.size.width * breakpoint.masterFraction).rounded())
+                        Rectangle().fill(BW.border).frame(width: BWMetrics.hairline)
+                        detail.frame(maxWidth: .infinity, maxHeight: .infinity)
+                    }
+                    .environment(\.splitActive, true)
+                } else {
+                    master.environment(\.splitActive, false)
                 }
             }
-        } else {
-            master
         }
     }
 }

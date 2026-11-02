@@ -19,7 +19,7 @@ struct SchemesScreen: View {
                 ForEach(1...Round.stationCount, id: \.self) { station in
                     ForEach(Direction.allCases, id: \.self) { d in
                         if let m = Schemes.machine(scheme: scheme, station: station, direction: d) {
-                            HStack {
+                            HStack(spacing: 0) {
                                 cell(d == .right ? "\(station)" : "")
                                 cell(d.name); cell("\(m.number)"); cell(m.label == "0" ? "0°" : "\(m.angle)° \(m.side)")
                                 cell(JSText.number(m.height) + " m")
@@ -37,6 +37,6 @@ struct SchemesScreen: View {
     }
 
     private func cell(_ t: String) -> some View {
-        Text(t).font(BWFont.value(.footnote, weight: .regular)).frame(maxWidth: .infinity, alignment: .leading)
+        Text(t).font(BWFont.value(.footnote, weight: .regular)).bwTableCell()
     }
 }

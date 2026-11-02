@@ -56,14 +56,17 @@ launch() {
   xcrun simctl launch --console-pty "$UDID" "$BUNDLE" -demo -state.section "$SECTION" &
   local pid=$!
   sleep 20
-  kill "$pid" 2>/dev/null || true
   # A crash leaves a report; name it so the caller can read it.
   local crash
   crash=$(ls -t ~/Library/Logs/DiagnosticReports/TrapShooterPro*.ips 2>/dev/null | head -1)
   if [ -n "$crash" ] && [ "$(( $(date +%s) - $(stat -f %m "$crash") ))" -lt 60 ]; then
+    kill "$pid" 2>/dev/null || true
     echo "CRASH REPORT: $crash"; return 1
   fi
+  # Screenshot before ending the console session: killing `simctl launch --console-pty` terminates the app too,
+  # which left a Home Screen picture.
   xcrun simctl io "$UDID" screenshot --type=png "$RUN_DIR/$SECTION-$LOOK.png" >/dev/null && echo "SCREENSHOT=$RUN_DIR/$SECTION-$LOOK.png"
+  kill "$pid" 2>/dev/null || true
 }
 run_step "launch-$SECTION-$LOOK" launch
 end_run
