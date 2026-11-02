@@ -24,7 +24,7 @@ Code: `Packages/TrapDesign` (SwiftUI). This document is the mapping and the reas
 | Modal boxes, 14 px radius, dark header | **Sheets** with `presentationCornerRadius(14)` and an ink header panel | Native presentation, same look. |
 | Table headers in ink with white uppercase text | Same, built as a SwiftUI row | Keeps the signature table look for ledgers and scheme tables. |
 | Letter‑spacing on body text | Tracking only on display and labels | SF is already tuned; tracking body text hurts legibility. |
-| CSS transitions | `BWMotion` animations, `Reduce Motion` respected | Same durations and curves. |
+| CSS transitions | `BWMotion` animations, `Reduce Motion` respected | Same durations and curves. Under Reduce Motion `bwPressEffect` drops the pressed scale; colour and opacity still fade. |
 
 ## 3. Colour tokens
 

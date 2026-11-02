@@ -173,8 +173,7 @@ public struct BWPrimaryButtonStyle: ButtonStyle {
             .frame(maxWidth: .infinity, minHeight: height)
             .background(BW.ink, in: RoundedRectangle(cornerRadius: BWMetrics.radiusMD, style: .continuous))
             .opacity(configuration.isPressed ? BWMotion.pressedOpacity : 1)
-            .scaleEffect(configuration.isPressed ? BWMotion.pressedScale : 1)
-            .animation(BWMotion.fast, value: configuration.isPressed)
+            .bwPressEffect(configuration.isPressed)
     }
 }
 
@@ -189,8 +188,7 @@ public struct BWSecondaryButtonStyle: ButtonStyle {
             .frame(maxWidth: .infinity, minHeight: height)
             .background(configuration.isPressed ? BW.surface : BW.paper, in: RoundedRectangle(cornerRadius: BWMetrics.radiusMD, style: .continuous))
             .overlay(RoundedRectangle(cornerRadius: BWMetrics.radiusMD, style: .continuous).strokeBorder(configuration.isPressed ? BW.ink : BW.borderStrong, lineWidth: BWMetrics.stroke))
-            .scaleEffect(configuration.isPressed ? BWMotion.pressedScale : 1)
-            .animation(BWMotion.fast, value: configuration.isPressed)
+            .bwPressEffect(configuration.isPressed)
     }
 }
 
@@ -204,8 +202,7 @@ public struct BWDestructiveButtonStyle: ButtonStyle {
             .frame(maxWidth: .infinity, minHeight: BWMetrics.actionHeight)
             .background(BW.destructive, in: RoundedRectangle(cornerRadius: BWMetrics.radiusMD, style: .continuous))
             .opacity(configuration.isPressed ? BWMotion.pressedOpacity : 1)
-            .scaleEffect(configuration.isPressed ? BWMotion.pressedScale : 1)
-            .animation(BWMotion.fast, value: configuration.isPressed)
+            .bwPressEffect(configuration.isPressed)
     }
 }
 
@@ -225,6 +222,19 @@ public struct BWIconButtonStyle: ButtonStyle {
             .animation(BWMotion.fast, value: configuration.isPressed)
     }
 }
+
+/// The pressed shrink of the filled and outlined buttons. Under Reduce Motion the button does not move; the colour
+/// and opacity change still fade.
+public struct BWPressEffect: ViewModifier {
+    let isPressed: Bool
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    public func body(content: Content) -> some View {
+        content
+            .scaleEffect(isPressed && !reduceMotion ? BWMotion.pressedScale : 1)
+            .animation(BWMotion.fast, value: isPressed)
+    }
+}
+public extension View { func bwPressEffect(_ isPressed: Bool) -> some View { modifier(BWPressEffect(isPressed: isPressed)) } }
 
 public extension ButtonStyle where Self == BWPrimaryButtonStyle { static var bwPrimary: BWPrimaryButtonStyle { BWPrimaryButtonStyle() } }
 public extension ButtonStyle where Self == BWSecondaryButtonStyle { static var bwSecondary: BWSecondaryButtonStyle { BWSecondaryButtonStyle() } }
