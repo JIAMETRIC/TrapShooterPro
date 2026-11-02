@@ -21,6 +21,10 @@ struct ScoreStrip: View {
     let round: Round
     var current: Int?
     var onSelect: ((Int) -> Void)?
+    @Environment(\.breakpoint) private var breakpoint
+
+    /// Height of a drawn tile; the tap area around it is the full touch target.
+    private let tileHeight: CGFloat = 28
 
     var body: some View {
         HStack(spacing: 2) {
@@ -32,9 +36,11 @@ struct ScoreStrip: View {
                         .lineLimit(1).minimumScaleFactor(0.5)              // 25 tiles in a row: the letter must fit
                         .dynamicTypeSize(...DynamicTypeSize.xxLarge)
                         .foregroundStyle(r?.status.foreground ?? BW.textMuted)
-                        .frame(maxWidth: .infinity, minHeight: 28)
+                        .frame(maxWidth: .infinity, minHeight: tileHeight)
                         .background(r?.status.background ?? BW.surfaceAlt, in: RoundedRectangle(cornerRadius: BWMetrics.radiusXS))
                         .overlay(RoundedRectangle(cornerRadius: BWMetrics.radiusXS).stroke(i == current ? BW.ink : (r?.status.border ?? BW.border), lineWidth: i == current ? BWMetrics.rule : BWMetrics.hairline))
+                        .padding(.vertical, max(0, (breakpoint.minTouchTarget - tileHeight) / 2))
+                        .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
                 .disabled(onSelect == nil)
