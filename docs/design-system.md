@@ -40,7 +40,7 @@ Light values are from `login.css` (the zinc scale). Dark values read the same sc
 | `BW.borderStrong` | grey‑300: control borders | `#D4D4D8` | `#52525B` |
 | `BW.text` | grey‑900 | `#18181B` | `#F4F4F5` |
 | `BW.textSecondary` | grey‑700: field labels | `#3F3F46` | `#D4D4D8` |
-| `BW.textMuted` | `--clr-muted` grey‑500 | `#71717A` | `#A1A1AA` |
+| `BW.textMuted` | `--clr-muted` grey‑500, a shade darker for 4.5:1 on `surface` | `#6B6B73` | `#A1A1AA` |
 | `BW.onInk` | text on ink | `#FFFFFF` | `#000000` |
 | `BW.inkOverlay(α)` | `rgba(255,255,255,α)` fills on black panels | white α | black α |
 

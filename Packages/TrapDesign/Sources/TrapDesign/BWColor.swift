@@ -36,7 +36,8 @@ public enum BW {
     /// Secondary text and field labels (grey-700).
     public static let textSecondary = Color.dynamic(light: 0x3F3F46, dark: 0xD4D4D8)
     /// Muted text, units, hints (`--clr-muted`, grey-500).
-    public static let textMuted = Color.dynamic(light: 0x71717A, dark: 0xA1A1AA)
+    /// Light is a shade under grey-500: #71717A gave 4.4:1 on `surface`; #6B6B73 gives 4.8:1 (5.3:1 on `paper`).
+    public static let textMuted = Color.dynamic(light: 0x6B6B73, dark: 0xA1A1AA)
     /// Text on an ink fill.
     public static let onInk = Color.dynamic(light: 0xFFFFFF, dark: 0x000000)
     /// Translucent fills on ink panels (`rgba(255,255,255,0.10)` on black).
