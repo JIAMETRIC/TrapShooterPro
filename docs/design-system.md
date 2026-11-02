@@ -123,6 +123,11 @@ Shooting domain mapping (keeps the G / Y / R meaning of the web app):
 | 600 to 1099 pt (8" iPad, Split View) | `.tabletSmall` | master‑detail 40 / 60 | 48 pt | sidebar 180 pt or tab bar |
 | ≥ 1100 pt (11" and 13" iPad landscape) | `.tabletLarge` | master‑detail 35 / 65, three columns where useful | 48 pt | sidebar 220 pt |
 
+The breakpoint is the window; a split lives in the space it is given. Beside the sidebar, `AdaptiveSplit` puts
+master and detail side by side only when the master column gets at least a phone's width (375 pt), so an 8" iPad
+and a 13" iPad in portrait show Record and Rounds as one column, as on a phone; `\.splitActive` tells rows whether
+to select or push.
+
 `BreakpointReader` at the root publishes `\.breakpoint`; `AdaptiveSplit` lays out master and detail; `BWKeys` holds
 the hardware‑keyboard shortcuts (Space start/stop, 1 2 3 directions, G Y R results, N no target, ⌘Z undo, arrows
 previous/next, ⌘S save, ⌘E share). Safe areas come from the system; split panes respect the trailing inset.
