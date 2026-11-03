@@ -30,6 +30,7 @@ struct SettingsScreen: View {
             DataSection()
             AboutSection()
         }
+        .font(BWFont.body)
         .scrollContentBackground(.hidden)
         .background(BW.surface)
         .navigationTitle("Settings")

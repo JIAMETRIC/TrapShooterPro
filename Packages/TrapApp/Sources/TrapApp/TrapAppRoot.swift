@@ -8,7 +8,10 @@ import TrapPlatform
 public struct TrapAppRoot: View {
     @State private var app: AppModel
 
-    public init() { _app = State(initialValue: DemoMode.isOn ? DemoMode.makeApp() : AppModel()) }
+    public init() {
+        BWAppearance.install()                                       // Inter and Bebas Neue, navigation bar titles
+        _app = State(initialValue: DemoMode.isOn ? DemoMode.makeApp() : AppModel())
+    }
     init(app: AppModel) { _app = State(initialValue: app) }
 
     public var body: some View {
@@ -16,7 +19,7 @@ public struct TrapAppRoot: View {
             .environment(app)
             .environment(app.record)
             .lifecycle(app.lifecycle)
-            .tint(BW.ink)
+            .tint(BW.tint)
     }
 }
 
@@ -101,10 +104,10 @@ private struct Sidebar: View {
                 Button { selection = s } label: {
                     Label(s.title, systemImage: s.symbol)
                         .font(BWFont.body.weight(selection == s ? .bold : .regular))
-                        .foregroundStyle(selection == s ? BW.ink : BW.onInk)
+                        .foregroundStyle(selection == s ? BW.onAccent : BW.onPanel)
                         .frame(maxWidth: .infinity, minHeight: BWMetrics.controlHeight, alignment: .leading)
                         .padding(.horizontal, BWMetrics.s3)
-                        .background(selection == s ? BW.onInk : Color.clear, in: RoundedRectangle(cornerRadius: BWMetrics.radiusMD))
+                        .background(selection == s ? BW.accentFill : Color.clear, in: RoundedRectangle(cornerRadius: BWMetrics.radiusMD))
                 }
                 .buttonStyle(.plain)
                 .listRowBackground(Color.clear)
@@ -114,7 +117,7 @@ private struct Sidebar: View {
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
-        .background(BW.ink)
+        .background(BW.panel)
         .navigationTitle(AppConstants.displayName)
     }
 }

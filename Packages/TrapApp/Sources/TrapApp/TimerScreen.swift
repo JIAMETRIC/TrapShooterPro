@@ -97,14 +97,14 @@ private struct Readout: View {
         let first = model.readout?.first, second = model.readout?.second
         BWInkPanel {
             VStack(alignment: .leading, spacing: BWMetrics.s1) {
-                Text(phaseText).font(BWFont.label).textCase(.uppercase).tracking(BWTracking.label).foregroundStyle(BW.onInk)
+                Text(phaseText).font(BWFont.label).textCase(.uppercase).tracking(BWTracking.label).foregroundStyle(BW.onPanel)
                 Text(first.map { JSText.fixed($0, 3) } ?? "0.000")
                     .font(BWFont.readout())
-                    .foregroundStyle(BW.onInk)
+                    .foregroundStyle(BW.onPanel)
                     .minimumScaleFactor(0.5)
                     .lineLimit(1)
                 Text(second.map { "2nd " + JSText.fixed($0, 3) + " s" } ?? " ")
-                    .font(BWFont.value(.title3)).foregroundStyle(BW.onInk)
+                    .font(BWFont.value(.title3)).foregroundStyle(BW.onPanel)
             }
             .padding(BWMetrics.s5)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -192,7 +192,7 @@ private struct LevelMeter: View {
             GeometryReader { g in
                 ZStack(alignment: .leading) {
                     Rectangle().fill(BW.surfaceAlt)
-                    Rectangle().fill((v ?? 0) >= mark ? BW.ink : BW.textMuted).frame(width: g.size.width * f(v ?? lo))
+                    Rectangle().fill((v ?? 0) >= mark ? BW.accent : BW.textMuted).frame(width: g.size.width * f(v ?? lo))
                     Rectangle().fill(BW.danger.dot).frame(width: 2).offset(x: g.size.width * f(mark))
                 }
             }

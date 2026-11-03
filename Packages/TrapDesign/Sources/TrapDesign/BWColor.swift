@@ -1,47 +1,74 @@
 import SwiftUI
 import UIKit
 
-/// The palette. Names follow the roles in the reference CSS (bw-theme.css, login.css), values are the
-/// zinc greys of login.css. Every token is dynamic: light appearance first, dark appearance second.
+/// The palette: Flat Glass · Brand Blue (Theme-Colors/AppTheme.swift, from the Android app's tokens.ts). Five brand
+/// colours: blue #2596BE, grey #666666, light grey #EBEAEA, black and white; green, amber and red only for real status.
+/// Every token is dynamic: light appearance first, dark appearance second. Contrast is checked against WCAG AA
+/// (4.5:1 for text): where the theme's #2596BE would carry text it is replaced by the theme's deep blue #1A6F8E.
 public enum BW {
-    // MARK: raw scale (light values; the dark scale is the same list read from the other end)
+    // MARK: brand
     public static let black = Color(hex: 0x000000)
     public static let white = Color(hex: 0xFFFFFF)
-    public static let grey50 = Color(hex: 0xFAFAFA)
-    public static let grey100 = Color(hex: 0xF4F4F5)
-    public static let grey200 = Color(hex: 0xE4E4E7)
-    public static let grey300 = Color(hex: 0xD4D4D8)
-    public static let grey400 = Color(hex: 0xA1A1AA)
-    public static let grey500 = Color(hex: 0x71717A)
-    public static let grey600 = Color(hex: 0x52525B)
-    public static let grey700 = Color(hex: 0x3F3F46)
-    public static let grey800 = Color(hex: 0x27272A)
-    public static let grey900 = Color(hex: 0x18181B)
+    /// Brand blue (`brand.primary`). Fills, bars, rules, selection. Not for text on light backgrounds (2.8:1).
+    public static let brandBlue = Color(hex: 0x2596BE)
+    /// Deep brand blue (`brand.link`). Carries white text at 5.7:1 and reads as text on light backgrounds at 4.7:1.
+    public static let brandBlueDeep = Color(hex: 0x1A6F8E)
+    /// Brand grey (`brand.secondary`).
+    public static let brandGrey = Color(hex: 0x666666)
+    /// Brand light grey (`brand.tertiary`).
+    public static let brandLight = Color(hex: 0xEBEAEA)
 
     // MARK: semantic, light / dark
-    /// The "black" of the system: primary text, filled buttons, table headers, accents. White in dark mode.
+    /// The strongest text: scores, titles, values. Black, white in dark mode.
     public static let ink = Color.dynamic(light: 0x000000, dark: 0xFFFFFF)
-    /// Card and sheet background (`--clr-card-bg`).
-    public static let paper = Color.dynamic(light: 0xFFFFFF, dark: 0x18181B)
-    /// Page background (`--clr-surface`, grey-100).
-    public static let surface = Color.dynamic(light: 0xF4F4F5, dark: 0x000000)
-    /// Zebra rows and quiet boxes (grey-50).
-    public static let surfaceAlt = Color.dynamic(light: 0xFAFAFA, dark: 0x27272A)
-    /// Hairlines (`--clr-border`, grey-200).
-    public static let border = Color.dynamic(light: 0xE4E4E7, dark: 0x3F3F46)
-    /// Control borders and emphasised rules (grey-300).
-    public static let borderStrong = Color.dynamic(light: 0xD4D4D8, dark: 0x52525B)
-    /// Body text (grey-900).
-    public static let text = Color.dynamic(light: 0x18181B, dark: 0xF4F4F5)
-    /// Secondary text and field labels (grey-700).
-    public static let textSecondary = Color.dynamic(light: 0x3F3F46, dark: 0xD4D4D8)
-    /// Muted text, units, hints (`--clr-muted`, grey-500).
-    /// Light is a shade under grey-500: #71717A gave 4.4:1 on `surface`; #6B6B73 gives 4.8:1 (5.3:1 on `paper`).
-    public static let textMuted = Color.dynamic(light: 0x6B6B73, dark: 0xA1A1AA)
+    /// Card and sheet background: the theme's glass (white 55 % on #EBEAEA, white 8 % on black) as an opaque colour,
+    /// so zebra rows and stacked cards keep one shade.
+    public static let paper = Color.dynamic(light: 0xF6F6F6, dark: 0x141414)
+    /// Page background (`theme.bg`): flat, no gradients.
+    public static let surface = Color.dynamic(light: 0xEBEAEA, dark: 0x000000)
+    /// Zebra rows and quiet boxes.
+    public static let surfaceAlt = Color.dynamic(light: 0xEFEFEF, dark: 0x1F1F1F)
+    /// Hairlines and dividers (`theme.divider`).
+    public static let border = Color.dynamic(light: 0xE2E1E1, dark: 0x2E2E2E)
+    /// Control borders (`theme.outline`, grey at 35 %).
+    public static let borderStrong = Color.dynamic(light: 0xC4C4C4, dark: 0x333333)
+    /// Glass buttons and icon buttons (`glassStrong`, white 60 % / 8 %).
+    public static let glassFill = Color.dynamic(light: 0xFFFFFF, dark: 0xFFFFFF, lightOpacity: 0.6, darkOpacity: 0.08)
+    /// The glass edge round cards and buttons (`glassBorder`, white 85 % / 16 %).
+    public static let glassBorder = Color.dynamic(light: 0xFFFFFF, dark: 0xFFFFFF, lightOpacity: 0.85, darkOpacity: 0.16)
+    /// Body text.
+    public static let text = Color.dynamic(light: 0x000000, dark: 0xFFFFFF)
+    /// Secondary text and field labels. 7.0:1 on `surface`.
+    public static let textSecondary = Color.dynamic(light: 0x4D4D4D, dark: 0xD9D9D9)
+    /// Muted text, units, hints (`theme.textMuted`, brand grey). 4.8:1 on `surface`, 5.3:1 on `paper`.
+    public static let textMuted = Color.dynamic(light: 0x666666, dark: 0xA6A6A6)
     /// Text on an ink fill.
     public static let onInk = Color.dynamic(light: 0xFFFFFF, dark: 0x000000)
     /// Translucent fills on ink panels (`rgba(255,255,255,0.10)` on black).
     public static func inkOverlay(_ opacity: Double) -> Color { onInk.opacity(opacity) }
+
+    // MARK: accent
+    /// Brand blue for non-text marks: bars, rules, the current target, chart fills.
+    public static let accent = brandBlue
+    /// Filled controls that carry white text: primary buttons, selected choices, table headers (5.7:1).
+    public static let accentFill = brandBlueDeep
+    /// Text and icons on `accentFill`.
+    public static let onAccent = white
+    /// Selected rows and soft highlights (`primaryTint`, blue 14 % / 24 %).
+    public static let accentSoft = Color.dynamic(light: 0x2596BE, dark: 0x2596BE, lightOpacity: 0.14, darkOpacity: 0.24)
+    /// System tint (toggles, Form buttons, links): deep blue on light screens (5.7:1 on white), brand blue on dark
+    /// (5.0:1 on the dark grouped rows).
+    public static let tint = Color.dynamic(light: 0x1A6F8E, dark: 0x2596BE)
+
+    // MARK: panel
+    /// The timer readout and the round-complete panel: black in both appearances, for sunlight on the range.
+    public static let panel = black
+    /// Text on `panel`.
+    public static let onPanel = white
+    /// Edge of a `panel` so it stays a shape on the black dark-mode page.
+    public static let panelBorder = Color.dynamic(light: 0x000000, dark: 0xFFFFFF, lightOpacity: 0, darkOpacity: 0.16)
+    /// Translucent fills and rings on a `panel`.
+    public static func panelOverlay(_ opacity: Double) -> Color { onPanel.opacity(opacity) }
 
     // MARK: status (the only colour in the system)
     public struct Status: Sendable {
@@ -70,8 +97,8 @@ public enum BW {
         dot: Color(hex: 0xEF4444))
     /// Grey pill (`.status-badge`, `.vm-badge-info`).
     public static let neutral = Status(foreground: textSecondary, background: surface, border: border, dot: textMuted)
-    /// Ink pill (`.status-badge.dark`).
-    public static let inkStatus = Status(foreground: onInk, background: ink, border: ink, dot: onInk)
+    /// Selected choice: deep blue fill, white text.
+    public static let accentStatus = Status(foreground: onAccent, background: accentFill, border: accentFill, dot: onAccent)
 
     // MARK: shooting domain
     /// Hit with the first shot (G).

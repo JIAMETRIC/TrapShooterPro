@@ -2,34 +2,35 @@ import SwiftUI
 
 // MARK: Surfaces
 
-/// `.card` / `.vm-card`: paper background, 1.5 pt border, 8 pt radius, soft shadow.
+/// Glass card (`GlassCard`): paper fill, 1 pt white glass edge, 16 pt radius, blue `card` shadow.
 public struct BWCardModifier: ViewModifier {
     public var padding: CGFloat
     public func body(content: Content) -> some View {
+        let shape = RoundedRectangle(cornerRadius: BWMetrics.radiusLG, style: .continuous)
         content
             .padding(padding)
-            .background(BW.paper, in: RoundedRectangle(cornerRadius: BWMetrics.radiusMD, style: .continuous))
-            .overlay(RoundedRectangle(cornerRadius: BWMetrics.radiusMD, style: .continuous).strokeBorder(BW.border, lineWidth: BWMetrics.stroke))
+            .background(BW.paper, in: shape)
+            .overlay(shape.strokeBorder(BW.glassBorder, lineWidth: BWMetrics.hairline))
             .bwShadow(.card)
     }
 }
 
-/// `.kpi-card` / `.vm-kpi-card`: a card with a 3 pt ink rule along the top.
+/// `.kpi-card` / `.vm-kpi-card`: a card with a 3 pt brand-blue rule along the top.
 public struct BWAccentTopModifier: ViewModifier {
     public func body(content: Content) -> some View {
         content.overlay(alignment: .top) {
-            Rectangle().fill(BW.ink).frame(height: BWMetrics.accentTop)
-                .clipShape(UnevenRoundedRectangle(topLeadingRadius: BWMetrics.radiusMD, topTrailingRadius: BWMetrics.radiusMD))
+            Rectangle().fill(BW.accent).frame(height: BWMetrics.accentTop)
+                .clipShape(UnevenRoundedRectangle(topLeadingRadius: BWMetrics.radiusLG, topTrailingRadius: BWMetrics.radiusLG))
         }
     }
 }
 
-/// `.vm-identity-banner`: a card with a 4 pt ink rule along the leading edge.
+/// `.vm-identity-banner`: a card with a 4 pt brand-blue rule along the leading edge.
 public struct BWAccentLeadingModifier: ViewModifier {
     public func body(content: Content) -> some View {
         content.overlay(alignment: .leading) {
-            Rectangle().fill(BW.ink).frame(width: BWMetrics.accentLeft)
-                .clipShape(UnevenRoundedRectangle(topLeadingRadius: BWMetrics.radiusMD, bottomLeadingRadius: BWMetrics.radiusMD))
+            Rectangle().fill(BW.accent).frame(width: BWMetrics.accentLeft)
+                .clipShape(UnevenRoundedRectangle(topLeadingRadius: BWMetrics.radiusLG, bottomLeadingRadius: BWMetrics.radiusLG))
         }
     }
 }
@@ -42,7 +43,7 @@ public extension View {
 
 // MARK: Text pieces
 
-/// `.vm-section-label`: uppercase, tracked, with a 2 pt ink rule under it.
+/// Section title (`SectionTitle`, `type.overline`): uppercase, tracked, muted, no rule.
 public struct BWSectionLabel<Trailing: View>: View {
     let title: String
     let trailing: Trailing
@@ -50,13 +51,11 @@ public struct BWSectionLabel<Trailing: View>: View {
         self.title = title; self.trailing = trailing()
     }
     public var body: some View {
-        VStack(alignment: .leading, spacing: BWMetrics.s2 - 2) {
-            HStack {
-                Text(title).font(.footnote.weight(.bold)).textCase(.uppercase).tracking(BWTracking.section).foregroundStyle(BW.ink)
-                Spacer(minLength: 0)
-                trailing
-            }
-            Rectangle().fill(BW.ink).frame(height: BWMetrics.rule)
+        HStack {
+            Text(title).font(BWFont.inter(.caption, weight: .semibold)).textCase(.uppercase).tracking(BWTracking.section)
+                .foregroundStyle(BW.textSecondary)
+            Spacer(minLength: 0)
+            trailing
         }
         .accessibilityAddTraits(.isHeader)
     }
@@ -66,16 +65,13 @@ public extension BWSectionLabel where Trailing == EmptyView {
     init(_ title: String) { self.init(title, trailing: { EmptyView() }) }
 }
 
-/// `.card-title`: condensed display title with a 2 pt rule.
+/// `.card-title`: Bebas Neue display title.
 public struct BWCardTitle: View {
     let title: String
     public init(_ title: String) { self.title = title }
     public var body: some View {
-        VStack(alignment: .leading, spacing: BWMetrics.s1 + 2) {
-            Text(title).bwDisplay(.title3)
-            Rectangle().fill(BW.ink).frame(height: BWMetrics.rule)
-        }
-        .accessibilityAddTraits(.isHeader)
+        Text(title).bwDisplay(.title3)
+            .accessibilityAddTraits(.isHeader)
     }
 }
 
@@ -90,7 +86,7 @@ public struct BWField: View {
         VStack(alignment: .leading, spacing: BWMetrics.s1) {
             Text(label).bwLabel()
             Text(value)
-                .font(mono ? BWFont.value(.subheadline) : .subheadline)
+                .font(mono ? BWFont.value(.subheadline) : BWFont.secondary)
                 .foregroundStyle(dim ? BW.textMuted : BW.text)
         }
         .accessibilityElement(children: .combine)
@@ -99,7 +95,7 @@ public struct BWField: View {
 
 // MARK: KPI tile
 
-/// `.vm-kpi-card`: label, large monospaced value with an optional unit, a sub line, ink rule on top.
+/// KPI tile: label, large Bebas Neue figure with an optional unit, a sub line, brand-blue rule on top.
 public struct BWKPITile: View {
     let label: String, value: String
     var unit: String? = nil, sub: String? = nil
@@ -110,14 +106,14 @@ public struct BWKPITile: View {
         VStack(alignment: .leading, spacing: BWMetrics.s2) {
             Text(label).bwLabel(color: BW.textMuted)
             HStack(alignment: .firstTextBaseline, spacing: 3) {
-                Text(value).font(BWFont.valueLarge).foregroundStyle(BW.ink).tracking(-0.5)
+                Text(value).font(BWFont.valueLarge).foregroundStyle(BW.ink).tracking(0.5)
                     .lineLimit(1).minimumScaleFactor(0.5)                  // a number never breaks across lines
                 if let unit {
-                    Text(unit).font(.caption.weight(.semibold)).textCase(.uppercase).tracking(BWTracking.label).foregroundStyle(BW.textMuted)
+                    Text(unit).font(BWFont.inter(.caption, weight: .semibold)).textCase(.uppercase).tracking(BWTracking.label).foregroundStyle(BW.textMuted)
                         .fixedSize()
                 }
             }
-            if let sub { Text(sub).font(.caption).foregroundStyle(BW.textMuted) }
+            if let sub { Text(sub).font(BWFont.inter(.caption)).foregroundStyle(BW.textMuted) }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .bwCard(padding: BWMetrics.s4)
@@ -147,7 +143,7 @@ public struct BWPill: View {
         HStack(spacing: 6) {
             if dot { BWStatusDot(status.dot) }
             Text(text)
-                .font(uppercase ? .caption2.weight(.bold) : BWFont.value(.caption, weight: .semibold))
+                .font(uppercase ? BWFont.inter(.caption2, weight: .semibold) : BWFont.value(.caption, weight: .semibold))
                 .textCase(uppercase ? .uppercase : nil)
                 .tracking(uppercase ? 0.5 : 0)
         }
@@ -162,32 +158,36 @@ public struct BWPill: View {
 
 // MARK: Buttons
 
-/// `.btn-submit` / `.btn-vm-action.primary`: ink fill, 48 pt tall, 8 pt radius.
+/// Primary button (`PrimaryButtonStyle`): deep brand-blue fill, white Inter SemiBold, 48 pt tall, 12 pt radius.
 public struct BWPrimaryButtonStyle: ButtonStyle {
     public var height: CGFloat = BWMetrics.controlHeight
+    @Environment(\.isEnabled) private var isEnabled
     public init(height: CGFloat = BWMetrics.controlHeight) { self.height = height }
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.subheadline.weight(.semibold)).tracking(0.5)
-            .foregroundStyle(BW.onInk)
+            .font(BWFont.inter(.headline, weight: .semibold))
+            .foregroundStyle(BW.onAccent)
             .frame(maxWidth: .infinity, minHeight: height)
-            .background(BW.ink, in: RoundedRectangle(cornerRadius: BWMetrics.radiusMD, style: .continuous))
+            .background(BW.accentFill, in: RoundedRectangle(cornerRadius: BWMetrics.radiusMD, style: .continuous))
+            .bwShadow(isEnabled ? .control : .none)
             .opacity(configuration.isPressed ? BWMotion.pressedOpacity : 1)
             .bwPressEffect(configuration.isPressed)
     }
 }
 
-/// `.btn-vm-action` / `.btn-outline`: paper fill, 1.5 pt border, ink text.
+/// Glass button (`GlassButtonStyle`): white glass fill, white edge, blue `control` shadow, ink Inter Medium.
 public struct BWSecondaryButtonStyle: ButtonStyle {
     public var height: CGFloat = BWMetrics.actionHeight
     public init(height: CGFloat = BWMetrics.actionHeight) { self.height = height }
     public func makeBody(configuration: Configuration) -> some View {
+        let shape = RoundedRectangle(cornerRadius: BWMetrics.radiusMD, style: .continuous)
         configuration.label
-            .font(.subheadline.weight(.semibold)).tracking(0.3)
+            .font(BWFont.inter(.body, weight: .medium))
             .foregroundStyle(BW.ink)
             .frame(maxWidth: .infinity, minHeight: height)
-            .background(configuration.isPressed ? BW.surface : BW.paper, in: RoundedRectangle(cornerRadius: BWMetrics.radiusMD, style: .continuous))
-            .overlay(RoundedRectangle(cornerRadius: BWMetrics.radiusMD, style: .continuous).strokeBorder(configuration.isPressed ? BW.ink : BW.borderStrong, lineWidth: BWMetrics.stroke))
+            .background(configuration.isPressed ? BW.accentSoft : BW.glassFill, in: shape)
+            .overlay(shape.strokeBorder(BW.glassBorder, lineWidth: BWMetrics.hairline))
+            .bwShadow(.control)
             .bwPressEffect(configuration.isPressed)
     }
 }
@@ -197,7 +197,7 @@ public struct BWDestructiveButtonStyle: ButtonStyle {
     public init() {}
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.subheadline.weight(.semibold))
+            .font(BWFont.inter(.headline, weight: .semibold))
             .foregroundStyle(BW.onDestructive)
             .frame(maxWidth: .infinity, minHeight: BWMetrics.actionHeight)
             .background(BW.destructive, in: RoundedRectangle(cornerRadius: BWMetrics.radiusMD, style: .continuous))
@@ -206,19 +206,19 @@ public struct BWDestructiveButtonStyle: ButtonStyle {
     }
 }
 
-/// `.btn-icon` / `.vm-modal-close-btn`: 44 pt square, quiet border.
+/// Icon button (`AppIconButton`, glass): 44 pt square, glass fill and edge; on a panel, a faint white fill.
 public struct BWIconButtonStyle: ButtonStyle {
     public var onInk = false
     public init(onInk: Bool = false) { self.onInk = onInk }
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.body.weight(.semibold))
-            .foregroundStyle(onInk ? BW.onInk : BW.ink)
+            .font(BWFont.inter(.body, weight: .semibold))
+            .foregroundStyle(onInk ? BW.onPanel : BW.ink)
             .frame(width: BWMetrics.iconButton, height: BWMetrics.iconButton)
-            .background(onInk ? BW.inkOverlay(configuration.isPressed ? 0.22 : 0.08) : (configuration.isPressed ? BW.surface : BW.paper),
+            .background(onInk ? BW.panelOverlay(configuration.isPressed ? 0.22 : 0.08) : (configuration.isPressed ? BW.accentSoft : BW.glassFill),
                         in: RoundedRectangle(cornerRadius: BWMetrics.radiusMD, style: .continuous))
             .overlay(RoundedRectangle(cornerRadius: BWMetrics.radiusMD, style: .continuous)
-                .strokeBorder(onInk ? BW.inkOverlay(0.15) : BW.borderStrong, lineWidth: BWMetrics.hairline))
+                .strokeBorder(onInk ? BW.panelOverlay(0.15) : BW.glassBorder, lineWidth: BWMetrics.hairline))
             .animation(BWMotion.fast, value: configuration.isPressed)
     }
 }
@@ -243,19 +243,19 @@ public extension ButtonStyle where Self == BWIconButtonStyle { static var bwIcon
 
 // MARK: Table
 
-/// `.vm-table thead th`: ink header row with uppercase white labels.
+/// Table header: deep brand-blue row with uppercase white labels (5.7:1).
 public struct BWTableHeader: View {
     let columns: [String]
     public init(_ columns: [String]) { self.columns = columns }
     public var body: some View {
         HStack(spacing: 0) {
             ForEach(Array(columns.enumerated()), id: \.offset) { _, c in
-                Text(c).font(.caption2.weight(.bold)).textCase(.uppercase).tracking(0.8).bwTableCell()
+                Text(c).font(BWFont.inter(.caption2, weight: .semibold)).textCase(.uppercase).tracking(0.8).bwTableCell()
             }
         }
-        .foregroundStyle(BW.onInk)
+        .foregroundStyle(BW.onAccent)
         .padding(.horizontal, BWMetrics.s3).padding(.vertical, 10)
-        .background(BW.ink)
+        .background(BW.accentFill)
     }
 }
 
@@ -287,23 +287,26 @@ public extension View { func bwTableCell() -> some View { modifier(BWTableCellMo
 
 // MARK: Ink panel
 
-/// `.showcase-panel` / `.vm-modal-header`: a black panel with faint circular rings, white text.
+/// Black panel with faint circular rings and white text, black in both appearances (timer readout, round complete).
+/// In dark mode a faint white edge keeps it apart from the black page.
 public struct BWInkPanel<Content: View>: View {
     let content: Content
     public init(@ViewBuilder content: () -> Content) { self.content = content() }
     public var body: some View {
         content
-            .foregroundStyle(BW.onInk)
+            .foregroundStyle(BW.onPanel)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background {
                 ZStack {
-                    BW.ink
-                    Circle().strokeBorder(BW.inkOverlay(0.08), lineWidth: 1).frame(width: 450, height: 450).offset(x: 180, y: -180)
-                    Circle().strokeBorder(BW.inkOverlay(0.05), lineWidth: 1).frame(width: 350, height: 350).offset(x: -160, y: 160)
+                    BW.panel
+                    Circle().strokeBorder(BW.panelOverlay(0.08), lineWidth: 1).frame(width: 450, height: 450).offset(x: 180, y: -180)
+                    Circle().strokeBorder(BW.panelOverlay(0.05), lineWidth: 1).frame(width: 350, height: 350).offset(x: -160, y: 160)
                 }
             }
             // clip the panel, not the ring stack: the 450 pt rings must not paint ink outside the panel's own frame
             .clipShape(RoundedRectangle(cornerRadius: BWMetrics.radiusLG, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: BWMetrics.radiusLG, style: .continuous).strokeBorder(BW.panelBorder, lineWidth: BWMetrics.hairline))
+            .bwShadow(.card)
     }
 }
 
@@ -364,5 +367,5 @@ public struct BWInkPanel<Content: View>: View {
     BWPill("Hit 1st", status: BW.hitFirst, dot: true)
     BWPill("Hit 2nd", status: BW.hitSecond, dot: true)
     BWPill("Lost", status: BW.lost, dot: true)
-    BWPill("Armed", status: BW.inkStatus)
+    BWPill("Armed", status: BW.accentStatus)
 }

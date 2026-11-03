@@ -239,7 +239,7 @@ private struct EntryPanel: View {
                 ForEach(Direction.displayOrder, id: \.self) { d in
                     let p = odds[d]
                     choice(title: "\(d.arrow) \(d.name)", sub: p > 0 ? JSText.fixed(p * 100, 0) + "%" : "full",
-                           selected: r.directions[i] == d, status: BW.inkStatus, id: "record.direction.\(d.name.lowercased())") { model.record(direction: d) }
+                           selected: r.directions[i] == d, status: BW.accentStatus, id: "record.direction.\(d.name.lowercased())") { model.record(direction: d) }
                         .keyboardShortcut(shortcut(d))
                         .disabled(p == 0 && r.directions[i] != d)
                 }
@@ -375,10 +375,10 @@ private struct DoneCard: View {
         let r = model.round, c = r.counts
         BWInkPanel {
             VStack(alignment: .leading, spacing: BWMetrics.s2) {
-                Text("Round complete").font(BWFont.label).textCase(.uppercase).foregroundStyle(BW.onInk)
-                Text("\(r.score) / 25").font(BWFont.readout(size: 48)).foregroundStyle(BW.onInk)
+                Text("Round complete").font(BWFont.label).textCase(.uppercase).foregroundStyle(BW.onPanel)
+                Text("\(r.score) / 25").font(BWFont.readout(size: 48)).foregroundStyle(BW.onPanel)
                 Text("\(c.hitFirst) first barrel · \(c.hitSecond) second barrel · \(c.lost) lost")
-                    .font(BWFont.secondary).foregroundStyle(BW.onInk)
+                    .font(BWFont.secondary).foregroundStyle(BW.onPanel)
                 ShareRoundButton(round: r)
             }
             .padding(BWMetrics.s5)
