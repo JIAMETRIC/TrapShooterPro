@@ -224,7 +224,11 @@ private struct AboutSection: View {
     var body: some View {
         Section("About") {
             LabeledContent(AppInfo.displayName, value: AppInfo.versionLine + " · " + AppInfo.channel)
+                .contentShape(Rectangle())
                 .onLongPressGesture { showDebug = true }
+                .sheet(isPresented: $showDebug) { DebugScreen() }
+            // each sheet sits on its own row: modifiers on a Form Section are copied to every row, and the
+            // duplicated presenters then show nothing
             Button("Send diagnostics") {
                 do {
                     bundle = SharedFile(url: try SupportBundle.make(audioLine: app.timer.diagnostics.line,
@@ -232,12 +236,11 @@ private struct AboutSection: View {
                     problem = nil
                 } catch { problem = "The diagnostics file could not be made." }
             }
+            .sheet(item: $bundle) { ActivitySheet(file: $0) }
             if let p = problem { Text(p).font(BWFont.note).foregroundStyle(BW.danger.foreground) }
             Text("No account, no server, no analytics. Diagnostics hold app and device facts and recent log lines, never your rounds, and leave the phone only if you send them.")
                 .font(BWFont.note).foregroundStyle(BW.textMuted)
         }
-        .sheet(item: $bundle) { ActivitySheet(file: $0) }
-        .sheet(isPresented: $showDebug) { DebugScreen() }
     }
 }
 
