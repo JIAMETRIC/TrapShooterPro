@@ -20,7 +20,9 @@ public enum BWMetrics {
     public static let radiusSM: CGFloat = 10
     /// Buttons, inputs, icon buttons.
     public static let radiusMD: CGFloat = 12
-    /// Cards, panels, the iPad sidebar item.
+    /// Selected bottom-nav item (`radius.item`).
+    public static let radiusItem: CGFloat = 14
+    /// Cards, panels, the bottom nav, the iPad sidebar item.
     public static let radiusLG: CGFloat = 16
     /// Dialogs and form sheets.
     public static let radiusXL: CGFloat = 18

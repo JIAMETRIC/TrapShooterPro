@@ -44,8 +44,8 @@ reference in `Tools/golden/reference/`; it is never shipped or extended. Progres
   `TimingFlow`, the pure port of the page's live timing. The app target holds only `TrapShooterProApp.swift`.
 - **TrapData** holds SwiftData models mirroring `Round`, autosave on every entry, a full‑library JSON backup/restore and a
   one‑time importer for 7.x documents. Recordings stay in `Documents/Recordings` so the Files app shows them.
-- **UI**: `TabView` on iPhone (Record, Timer, Rounds, Analysis, Schemes, Settings), `NavigationSplitView` with an ink
-  sidebar on iPad. Views are thin; logic lives in TrapCore and `@Observable` models. Everything styled with `TrapDesign`
+- **UI**: the theme's bottom nav (`BWBottomNav`) on iPhone (Record, Timer, Rounds, Analysis, and a More menu for
+  Schemes and Settings), `NavigationSplitView` with an ink sidebar on iPad. Views are thin; logic lives in TrapCore and `@Observable` models. Everything styled with `TrapDesign`
   tokens (`BW.*`, `BWFont`, `BWMetrics`, `.bwCard()`, `.bwPrimary` …). No hard‑coded colours, sizes or fonts in views.
 - **Interchange stays compatible**: document v2 JSON and the CSV column layout are the export formats. Changing them
   breaks the coach's tooling and the golden tests.

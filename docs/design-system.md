@@ -25,7 +25,10 @@ change; this document maps them to the theme and records where the app departs f
 | Delete red `#FF2C2C` | `BW.destructive` `#DC3545` / `#DC2626` | White text needs 4.5:1. |
 | Theme status green / red | The existing `success` / `warning` / `danger` sets | Already AA‑checked in light and dark, and the G / Y / R results need amber, which the theme lacks. |
 | Text sizes in px | Dynamic Type: every Inter and Bebas style uses `Font.custom(_:size:relativeTo:)` on the theme's scale | Accessibility and App Review. Only the timer readout and the scorecard keep fixed sizes. |
-| Feather icons, floating bottom nav | SF Symbols, the system tab bar on iPhone and the black sidebar on iPad | Native navigation. |
+| Feather icons | SF Symbols in their `.fill` variants | Built into iOS. |
+| Floating bottom nav (`AppBottomNav`) | `BWBottomNav` on iPhone, in place of the system tab bar; the black sidebar stays on iPad | Owner's decision, 4 Nov: iOS 26's tab bar is a fixed capsule (≈ 30 pt container and ≈ 26 pt highlight radii) that cannot take the theme's 16 / 14 pt. |
+| Inactive nav items muted | Every icon and label in `BW.tint`; the selected item on a deep‑blue tile in white | Owner's request, 4 Nov. |
+| Five or more nav items | Record, Timer, Rounds, Analysis and a **More** menu for Schemes and Settings; the slot takes the open item's icon and title | Six places, five slots on a phone. |
 | Section titles without rules | Same: `BWSectionLabel` and `BWCardTitle` lost the 2 pt ink rule | Follows the theme. |
 | Screen side padding 20 | `BWMetrics.gutter` stays 16 | Seven‑column tables on a phone need the width. |
 
@@ -47,7 +50,8 @@ change; this document maps them to the theme and records where the app departs f
 | `BW.accent` | brand blue for non‑text marks | `#2596BE` | `#2596BE` |
 | `BW.accentFill` / `BW.onAccent` | filled controls with white text (5.7:1) | `#1A6F8E` / white | same |
 | `BW.accentSoft` | pressed and selected highlights | blue 14 % | blue 24 % |
-| `BW.tint` | system tint | `#1A6F8E` | `#2596BE` |
+| `BW.tint` | system tint; bottom-nav icons and labels | `#1A6F8E` | `#2596BE` |
+| `BW.navFill` | bottom-nav glass over a frosted backdrop | white 65 % | black 88 % |
 | `BW.panel` / `BW.onPanel` | timer readout, round complete, iPad sidebar | black / white | same |
 | `BW.panelBorder` | panel edge | none | white 16 % |
 
@@ -99,7 +103,7 @@ SemiBold. Without registration every style falls back to the system font.
 | Theme | Token |
 |---|---|
 | spacing 4 / 8 / 12 / 16 / 20 / 24 / 32 / 48 | `BWMetrics.s1 … s12` |
-| radius chip 10, control 12, card 16, dialog 18, pill | `radiusSM`, `radiusMD`, `radiusLG`, `radiusXL`, `Capsule` |
+| radius chip 10, control 12, active nav item 14, card and nav 16, dialog 18, pill | `radiusSM`, `radiusMD`, `radiusItem`, `radiusLG`, `radiusXL`, `Capsule` |
 | borders 1 px | `hairline` (1.5 `stroke` for pills) |
 | 3 px top accent, 4 px left accent (brand blue) | `accentTop`, `accentLeft` |
 | touch: control 48, action 44, icon 44 | `controlHeight`, `actionHeight`, `iconButton` |
@@ -121,6 +125,7 @@ SemiBold. Without registration every style falls back to the system font.
 | `GlassButtonStyle` | `.buttonStyle(.bwSecondary)` |
 | destructive | `.buttonStyle(.bwDestructive)` |
 | `AppIconButton` (glass) | `.buttonStyle(.bwIcon)` / `onInk: true` on a panel |
+| `AppBottomNav` | `BWBottomNav(items:more:selection:)`: 16 pt frosted glass bar (`navFill` over `.regularMaterial`, white edge, `card` shadow), items 52 pt tall, the selected one a 14 pt (`radiusItem`) deep‑blue tile with the `control` shadow. Text capped at Dynamic Type xLarge, with the large content viewer on long press, as a system tab bar does. Hidden while the keyboard is up. |
 | table | `BWTableHeader` (deep blue), `.bwTableRow(index:)` |
 | black panel | `BWInkPanel` (`BW.panel`) |
 
