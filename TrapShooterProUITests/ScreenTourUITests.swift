@@ -179,11 +179,13 @@ final class ScreenTourUITests: XCTestCase {
 
     func test06Schemes() {
         begin("06-Schemes", section: "schemes")
-        let back = app.navigationBars.buttons.firstMatch
-        if back.exists {
-            back.tap(); wait(1)
+        let more = app.buttons["nav.more"]                         // the bottom nav's More slot holds Schemes and Settings
+        if more.waitForExistence(timeout: 3) {
+            more.tap(); wait(1)
             shot("more-menu")
-            app.staticTexts["Schemes"].firstMatch.tap(); wait(1)
+            let schemes = app.buttons["Schemes"].firstMatch
+            if schemes.exists { schemes.tap() } else { closeMenu() }
+            wait(1)
         }
         scrollPages("scheme-default")
         scrollToTop()

@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 import TrapCore
 import TrapDesign
 import TrapPlatform
@@ -49,7 +50,8 @@ public enum AppSection: String, CaseIterable, Identifiable, Sendable {
     }
 }
 
-/// `TabView` on iPhone, `NavigationSplitView` with an ink sidebar on iPad. The selected place survives a relaunch.
+/// The theme's bottom nav on iPhone, `NavigationSplitView` with an ink sidebar on iPad. The selected place survives a
+/// relaunch.
 @MainActor
 struct AppShell: View {
     @Environment(\.breakpoint) private var breakpoint
@@ -72,13 +74,7 @@ struct AppShell: View {
                 }
                 .navigationSplitViewStyle(.balanced)              // sidebar stays beside the content in portrait
             } else {
-                TabView(selection: selection) {
-                    ForEach(AppSection.allCases) { s in
-                        NavigationStack { SectionScreen(section: s) }
-                            .tabItem { Label(s.title, systemImage: s.symbol) }
-                            .tag(s)
-                    }
-                }
+                PhoneShell(selection: selection)
             }
         }
         .overlay(alignment: .top) {
@@ -92,6 +88,45 @@ struct AppShell: View {
             }
         }
     }
+}
+
+/// iPhone: one navigation stack per place under `BWBottomNav`. A place is built the first time it is opened and then
+/// kept, so each keeps its scroll position and pushed screens as a tab would. Schemes and Settings share the More slot.
+/// The bar steps aside while the keyboard is up.
+@MainActor
+private struct PhoneShell: View {
+    @Binding var selection: AppSection
+    @State private var opened: Set<AppSection> = []
+    @State private var keyboardUp = false
+
+    private static let main: [AppSection] = [.record, .timer, .rounds, .analysis]
+    private static let more: [AppSection] = [.schemes, .settings]
+
+    var body: some View {
+        ZStack {
+            ForEach(AppSection.allCases) { s in
+                if opened.contains(s) || s == selection {
+                    let on = s == selection
+                    NavigationStack { SectionScreen(section: s) }
+                        .opacity(on ? 1 : 0)
+                        .allowsHitTesting(on)
+                        .accessibilityHidden(!on)
+                }
+            }
+        }
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            if !keyboardUp {
+                BWBottomNav(items: Self.main.map(item), more: Self.more.map(item), selection: $selection)
+                    .padding(.horizontal, BWMetrics.gutter)
+                    .padding(.bottom, BWMetrics.s1)
+            }
+        }
+        .onChange(of: selection, initial: true) { _, s in opened.insert(s) }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in keyboardUp = true }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in keyboardUp = false }
+    }
+
+    private func item(_ s: AppSection) -> BWNavItem<AppSection> { BWNavItem(s, title: s.title, symbol: s.symbol) }
 }
 
 /// The ink sidebar on iPad.

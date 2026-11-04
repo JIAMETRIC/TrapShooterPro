@@ -59,6 +59,8 @@ public enum BW {
     /// System tint (toggles, Form buttons, links): deep blue on light screens (5.7:1 on white), brand blue on dark
     /// (5.0:1 on the dark grouped rows).
     public static let tint = Color.dynamic(light: 0x1A6F8E, dark: 0x2596BE)
+    /// The bottom nav's glass (`navSurface`, white 65 % / black 88 %).
+    public static let navFill = Color.dynamic(light: 0xFFFFFF, dark: 0x000000, lightOpacity: 0.65, darkOpacity: 0.88)
 
     // MARK: panel
     /// The timer readout and the round-complete panel: black in both appearances, for sunlight on the range.

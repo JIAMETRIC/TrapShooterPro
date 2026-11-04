@@ -65,10 +65,10 @@ final class RecordFlowUITests: XCTestCase {
     // MARK: helpers
 
     private func openTimer() {
-        let tab = app.tabBars.buttons["Timer"]
+        let tab = app.buttons["nav.timer"]                          // iPhone bottom nav
         if tab.waitForExistence(timeout: 3) { tab.tap(); return }
         let row = app.buttons["Timer"].firstMatch                   // iPad sidebar
-        XCTAssertTrue(row.waitForExistence(timeout: 3), "a Timer tab or sidebar row")
+        XCTAssertTrue(row.waitForExistence(timeout: 3), "a Timer nav item or sidebar row")
         row.tap()
     }
 

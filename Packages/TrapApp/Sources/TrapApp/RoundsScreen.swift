@@ -122,7 +122,8 @@ private struct RoundsList: View {
         .listStyle(.insetGrouped)
         .scrollContentBackground(.hidden)
         .background(BW.surface)
-        .searchable(text: $model.text, prompt: "Range or session id")
+        // in the navigation bar: iOS 26 otherwise puts the field at the bottom, under the bottom nav
+        .searchable(text: $model.text, placement: .navigationBarDrawer(displayMode: .automatic), prompt: "Range or session id")
         .onChange(of: model.filter) { _, _ in model.reload() }
     }
 
