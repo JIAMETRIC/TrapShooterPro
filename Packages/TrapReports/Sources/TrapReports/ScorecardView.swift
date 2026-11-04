@@ -3,8 +3,9 @@ import TrapCore
 import TrapDesign
 
 /// The A4 scorecard (595 × 842 pt), same content and order as the 7.0.7 report: header band, shooter and gun,
-/// score, details band, 25-target strip, counts, target table, footer. Drawn with the design system in light
-/// appearance; rendered to PNG by `ScorecardImageExporter` and to vector PDF by `ScorecardPDFExporter`.
+/// score, details band, 25-target strip, counts, target table, footer. Drawn with the design system (brand blue,
+/// Inter and Bebas Neue) on a white page in light appearance; rendered to PNG by `ScorecardImageExporter` and to
+/// vector PDF by `ScorecardPDFExporter`.
 public struct ScorecardView: View {
     public static let pageSize = CGSize(width: 595, height: 842)
     let round: Round
@@ -18,7 +19,9 @@ public struct ScorecardView: View {
 
     private var timing: Bool { (0..<Round.targetCount).contains { round.firstShot[$0] != nil || round.secondShot[$0] != nil } }
     private var showBreak: Bool { timing && breakModel.settings.enabled }
-    private let paper = Color.white, ink = Color.black, muted = Color(hex: 0x71717A), band = Color(hex: 0xF4F4F5), line = Color(hex: 0xE4E4E7)
+    // A printed page: white paper whatever the appearance; brand deep blue for the bands (white text at 5.7:1).
+    private let paper = Color.white, ink = Color.black, muted = BW.brandGrey, band = Color(hex: 0xF3F3F3), line = Color(hex: 0xE2E1E1)
+    private let brand = BW.brandBlueDeep
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -34,7 +37,7 @@ public struct ScorecardView: View {
             .padding(.top, 18)
             Spacer(minLength: 0)
             Text("Created with TrapShooterPro Ver \(appVersion)  ·  \(today)")
-                .font(.system(size: 8)).foregroundStyle(muted)
+                .font(BWFont.inter(fixed: 8)).foregroundStyle(muted)
                 .frame(maxWidth: .infinity).padding(.bottom, 10)
         }
         .frame(width: ScorecardView.pageSize.width, height: ScorecardView.pageSize.height, alignment: .top)
@@ -45,30 +48,30 @@ public struct ScorecardView: View {
     private var header: some View {
         HStack {
             VStack(alignment: .leading, spacing: 2) {
-                Text("TRAPSHOOTERPRO").font(.system(size: 26, weight: .bold).width(.condensed)).tracking(1.5)
-                Text("Ver \(appVersion)  ·  Olympic Trap").font(.system(size: 9)).opacity(0.7)
+                Text("TRAPSHOOTERPRO").font(BWFont.numeric(fixed: 30)).tracking(1.5)
+                Text("Ver \(appVersion)  ·  Olympic Trap").font(BWFont.inter(fixed: 9)).opacity(0.7)
             }
             Spacer()
-            Text("SCORECARD").font(.system(size: 17, weight: .semibold).width(.condensed)).tracking(1)
+            Text("SCORECARD").font(BWFont.numeric(fixed: 20)).tracking(1)
         }
         .foregroundStyle(paper)
         .padding(.horizontal, 30).frame(height: 68)
-        .frame(maxWidth: .infinity).background(ink)
+        .frame(maxWidth: .infinity).background(brand)
     }
 
     private var shooterAndScore: some View {
         HStack(alignment: .top) {
             VStack(alignment: .leading, spacing: 3) {
-                Text(round.shooter.isEmpty ? "Shooter" : round.shooter).font(.system(size: 24, weight: .bold).width(.condensed)).foregroundStyle(ink).lineLimit(1)
-                Text([round.weapon, round.ammo].filter { !$0.isEmpty }.joined(separator: "  ·  ")).font(.system(size: 10)).foregroundStyle(muted)
+                Text(round.shooter.isEmpty ? "Shooter" : round.shooter).font(BWFont.inter(fixed: 22, weight: .semibold)).foregroundStyle(ink).lineLimit(1)
+                Text([round.weapon, round.ammo].filter { !$0.isEmpty }.joined(separator: "  ·  ")).font(BWFont.inter(fixed: 10)).foregroundStyle(muted)
                 if !round.choke1.isEmpty || !round.choke2.isEmpty {
-                    Text("Choke   1st barrel: \(round.choke1.isEmpty ? "–" : round.choke1)    2nd barrel: \(round.choke2.isEmpty ? "–" : round.choke2)").font(.system(size: 10)).foregroundStyle(muted)
+                    Text("Choke   1st barrel: \(round.choke1.isEmpty ? "–" : round.choke1)    2nd barrel: \(round.choke2.isEmpty ? "–" : round.choke2)").font(BWFont.inter(fixed: 10)).foregroundStyle(muted)
                 }
             }
             Spacer()
             HStack(alignment: .firstTextBaseline, spacing: 2) {
-                Text("\(round.score)").font(.system(size: 64, weight: .bold).width(.condensed)).foregroundStyle(ink)
-                Text("/25").font(.system(size: 20, weight: .semibold).width(.condensed)).foregroundStyle(muted)
+                Text("\(round.score)").font(BWFont.numeric(fixed: 76)).foregroundStyle(ink)
+                Text("/25").font(BWFont.numeric(fixed: 24)).foregroundStyle(muted)
             }
         }
     }
@@ -86,8 +89,8 @@ public struct ScorecardView: View {
         VStack(alignment: .leading, spacing: 6) {
             ForEach(Array(rows.enumerated()), id: \.offset) { _, row in
                 HStack(alignment: .firstTextBaseline, spacing: 6) {
-                    Text(row.0.uppercased()).font(.system(size: 8, weight: .semibold)).tracking(0.5).foregroundStyle(muted).frame(width: 72, alignment: .leading)
-                    Text(row.1).font(.system(size: 10, weight: .medium)).foregroundStyle(ink).lineLimit(1)
+                    Text(row.0.uppercased()).font(BWFont.inter(fixed: 8, weight: .semibold)).tracking(0.5).foregroundStyle(muted).frame(width: 72, alignment: .leading)
+                    Text(row.1).font(BWFont.inter(fixed: 10, weight: .medium)).foregroundStyle(ink).lineLimit(1)
                 }
             }
         }
@@ -110,7 +113,7 @@ public struct ScorecardView: View {
                     }
                     .frame(height: 10).foregroundStyle(ink)
                     Rectangle().fill(color(round.results[i])).frame(height: 30)
-                    Text("\(round.station(at: i))").font(.system(size: 8, design: .monospaced)).foregroundStyle(muted)
+                    Text("\(round.station(at: i))").font(BWFont.inter(fixed: 8).monospacedDigit()).foregroundStyle(muted)
                 }
                 .frame(maxWidth: .infinity)
             }
@@ -124,11 +127,11 @@ public struct ScorecardView: View {
             legend(BW.hitSecond.dot, "\(c.hitSecond) second barrel")
             legend(BW.lost.dot, "\(c.lost) miss")
             Spacer()
-            Text("\(round.recorded) of 25 recorded").font(.system(size: 10, weight: .medium)).foregroundStyle(muted)
+            Text("\(round.recorded) of 25 recorded").font(BWFont.inter(fixed: 10, weight: .medium)).foregroundStyle(muted)
         }
     }
     private func legend(_ color: Color, _ text: String) -> some View {
-        HStack(spacing: 5) { Circle().fill(color).frame(width: 8, height: 8); Text(text).font(.system(size: 10, weight: .medium)).foregroundStyle(ink) }
+        HStack(spacing: 5) { Circle().fill(color).frame(width: 8, height: 8); Text(text).font(BWFont.inter(fixed: 10, weight: .medium)).foregroundStyle(ink) }
     }
 
     private var columns: [(String, CGFloat, Alignment)] {
@@ -142,11 +145,11 @@ public struct ScorecardView: View {
         VStack(spacing: 0) {
             HStack(spacing: 6) {
                 ForEach(Array(columns.enumerated()), id: \.offset) { _, col in
-                    Text(col.0).font(.system(size: 8, weight: .semibold)).frame(width: col.1, alignment: col.2)
+                    Text(col.0).font(BWFont.inter(fixed: 8, weight: .semibold)).frame(width: col.1, alignment: col.2)
                 }
                 Spacer(minLength: 0)
             }
-            .foregroundStyle(paper).padding(.horizontal, 6).frame(height: 18).background(ink)
+            .foregroundStyle(paper).padding(.horizontal, 6).frame(height: 18).background(brand)
             ForEach(0..<Round.targetCount, id: \.self) { i in
                 row(i).background(i % 2 == 1 ? band : paper)
             }
@@ -165,7 +168,7 @@ public struct ScorecardView: View {
             cell(t?.label ?? "–", 50, .leading, mono: true)
             cell(t.map { String(format: "%.2f m", $0.height) } ?? "–", 50, .trailing, mono: true)
             HStack(spacing: 4) {
-                if let res { Circle().fill(color(res)).frame(width: 7, height: 7); Text(res == .hitFirst ? "1st barrel" : res == .hitSecond ? "2nd barrel" : "Miss").font(.system(size: 9, weight: .medium)) }
+                if let res { Circle().fill(color(res)).frame(width: 7, height: 7); Text(res == .hitFirst ? "1st barrel" : res == .hitSecond ? "2nd barrel" : "Miss").font(BWFont.inter(fixed: 9, weight: .medium)) }
             }
             .frame(width: 78, alignment: .leading).foregroundStyle(ink)
             if timing {
@@ -179,7 +182,7 @@ public struct ScorecardView: View {
     }
 
     private func cell(_ s: String, _ w: CGFloat, _ a: Alignment, mono: Bool) -> some View {
-        Text(s).font(.system(size: 9, design: mono ? .monospaced : .default)).foregroundStyle(ink).frame(width: w, alignment: a).lineLimit(1)
+        Text(s).font(mono ? BWFont.inter(fixed: 9).monospacedDigit() : BWFont.inter(fixed: 9)).foregroundStyle(ink).frame(width: w, alignment: a).lineLimit(1)
     }
 
     /// "Sun, 24°C, 55% humidity, light wind" (the report's condition line).

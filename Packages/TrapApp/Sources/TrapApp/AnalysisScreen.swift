@@ -61,7 +61,7 @@ private struct TrendBars: View {
                     ForEach(Array(points.enumerated()), id: \.offset) { _, p in
                         VStack(spacing: 2) {
                             Text("\(p.score)").font(BWFont.value(.caption2, weight: .regular)).foregroundStyle(BW.textSecondary)
-                            RoundedRectangle(cornerRadius: BWMetrics.radiusXS).fill(BW.ink)
+                            RoundedRectangle(cornerRadius: BWMetrics.radiusXS).fill(BW.accent)
                                 .frame(height: CGFloat(p.score) / 25 * 120)
                         }
                         .frame(maxWidth: .infinity)
@@ -97,7 +97,7 @@ private struct TrapSection: View {
             } else {
                 ForEach(Analysis.findings(analysis), id: \.self) { f in
                     HStack(alignment: .top, spacing: BWMetrics.s2) {
-                        Circle().fill(BW.ink).frame(width: BWMetrics.featureBullet, height: BWMetrics.featureBullet).padding(.top, 7)
+                        Circle().fill(BW.accent).frame(width: BWMetrics.featureBullet, height: BWMetrics.featureBullet).padding(.top, 7)
                         Text(f).font(BWFont.secondary).foregroundStyle(BW.text)
                     }
                 }

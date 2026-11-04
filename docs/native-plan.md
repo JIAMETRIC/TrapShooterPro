@@ -104,7 +104,9 @@ TrapShooterPro.xcworkspace
 - **Detector untouched.** `AudioDetector.swift` moves into the `ShotTimer` package as is. Its callbacks already land on the main queue, which is exactly what SwiftUI wants. A regression harness guards it.
 - **"Time a recording"** is rebuilt by reading the file with `AVAudioFile` and pushing buffers into the same `AudioDetector` (a small `process(buffer)` entry point). That deletes the JavaScript duplicate for good.
 - **Scorecard and PDF**: draw the scorecard once as a SwiftUI view; `ImageRenderer` gives the PNG, `UIGraphicsPDFRenderer` gives a real A4 PDF with vector text. The hand‑rolled JPEG‑in‑PDF goes away.
-- **Fonts**: San Francisco (decided). The scorecard moves from Barlow / IBM Plex Mono to SF Pro and SF Mono.
+- **Fonts**: ~~San Francisco (decided). The scorecard moves from Barlow / IBM Plex Mono to SF Pro and SF Mono.~~
+  Superseded on 3 Nov 2026 by the Flat Glass · Brand Blue theme: Inter and Bebas Neue, bundled in TrapDesign
+  (SIL OFL 1.1), for the app and the scorecard. See `docs/design-system.md`.
 - **Storage layout**: SwiftData store in Application Support; recordings stay in `Documents/Recordings` so the Files app still shows them.
 - **Privacy**: mic and location usage strings stay; no tracking, no third‑party SDKs, so App Privacy labels are nearly empty ("Data not collected" if there is no sync).
 
@@ -176,7 +178,7 @@ Each phase ends with something installable on the phone. Estimates assume one de
 | Sync at launch | **None. Local storage only.** No account, no server, no network dependency. Cloud sync is not part of v1. |
 | Name and identity | Project and App Store name **TrapShooterPro**, name under the icon **TrapShoot** (fits without truncation), bundle identifier `com.mtajudeen.trapshooterpro` unchanged |
 | Devices | **iPhone and iPad** (universal) |
-| Scorecard fonts | **San Francisco** (SF Pro, SF Mono). No bundled fonts. |
+| Scorecard fonts | **Inter and Bebas Neue**, bundled in TrapDesign (3 Nov 2026; was San Francisco). |
 | Visual design | **Black‑and‑white system** from the supplied `bw-theme.css` / `login.css`, translated to iOS in `docs/design-system.md` and `Packages/TrapDesign` (light + dark, SF typography, 44 pt targets). |
 | Source control | GitHub under **JIAMETRIC**. Code is pushed from the cloud session and pulled on the Mac. |
 

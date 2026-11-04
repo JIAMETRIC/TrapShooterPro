@@ -38,7 +38,7 @@ struct ScoreStrip: View {
                         .foregroundStyle(r?.status.foreground ?? BW.textMuted)
                         .frame(maxWidth: .infinity, minHeight: tileHeight)
                         .background(r?.status.background ?? BW.surfaceAlt, in: RoundedRectangle(cornerRadius: BWMetrics.radiusXS))
-                        .overlay(RoundedRectangle(cornerRadius: BWMetrics.radiusXS).stroke(i == current ? BW.ink : (r?.status.border ?? BW.border), lineWidth: i == current ? BWMetrics.rule : BWMetrics.hairline))
+                        .overlay(RoundedRectangle(cornerRadius: BWMetrics.radiusXS).stroke(i == current ? BW.accent : (r?.status.border ?? BW.border), lineWidth: i == current ? BWMetrics.rule : BWMetrics.hairline))
                         .padding(.vertical, max(0, (breakpoint.minTouchTarget - tileHeight) / 2))
                         .contentShape(Rectangle())
                 }
