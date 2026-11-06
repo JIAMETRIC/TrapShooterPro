@@ -18,8 +18,14 @@ enum DemoMode {
         let defaults = UserDefaults(suiteName: "demo") ?? .standard
         defaults.removePersistentDomain(forName: "demo")
         defaults.set(rounds.last?.id, forKey: AppState.currentRoundKey)
-        return AppModel(repository: InMemoryRoundRepository(rounds), timer: DemoTimer(), settings: settings, defaults: defaults)
+        return AppModel(repository: InMemoryRoundRepository(rounds), timer: DemoTimer(), settings: settings, defaults: defaults,
+                        account: account)
     }
+
+    /// Signed in from the start, so screenshots and UI tests open on the app, not on Sign in.
+    static let account = Account(id: "demo", fullName: "Mohammad Tajudeen", email: "demo@trapshoot.app", mobile: "",
+                                 country: "AE", dateOfBirth: "1990-01-01", role: .athlete, requestedRole: nil,
+                                 invitationCode: "", emailVerified: false, createdAt: "2026-10-01T08:00:00.000Z")
 
     /// 14 full rounds over the last weeks and one round in progress (12 of 25 targets), all obeying the station rule.
     static func sampleRounds(now: Date = Date()) -> [Round] {

@@ -15,6 +15,7 @@ struct SettingsScreen: View {
 
     var body: some View {
         Form {
+            AccountSection()
             ProfileSection()
             NewRoundSection()
             TimerSection()
@@ -47,6 +48,38 @@ private struct SettingBinding {
     let app: AppModel
     func callAsFunction<V>(_ key: WritableKeyPath<AppSettings, V>) -> Binding<V> {
         Binding(get: { app.settings[keyPath: key] }, set: { v in app.update { $0[keyPath: key] = v } })
+    }
+}
+
+/// The signed-in account and Sign out (CLAY NOVA screen 43, first rows).
+@MainActor
+private struct AccountSection: View {
+    @Environment(AppModel.self) private var app
+    @State private var confirm = false
+    var body: some View {
+        Section {
+            if let a = app.auth.account {
+                LabeledContent("Name", value: a.fullName)
+                LabeledContent("Email") {
+                    VStack(alignment: .trailing, spacing: 2) {
+                        Text(a.email)
+                        if !a.emailVerified { Text("Not verified").font(BWFont.note).foregroundStyle(BW.textMuted) }
+                    }
+                }
+                if !a.mobile.isEmpty { LabeledContent("Mobile", value: a.mobile) }
+                LabeledContent("Country", value: a.countryName)
+                LabeledContent("Role", value: a.requestedRole.map { "\(a.role.title), \($0.title.lowercased()) pending" } ?? a.role.title)
+            }
+            Button("Sign out", role: .destructive) { confirm = true }
+                .confirmationDialog("Sign out?", isPresented: $confirm, titleVisibility: .visible) {
+                    Button("Sign out", role: .destructive) { app.auth.signOut() }
+                    Button("Cancel", role: .cancel) {}
+                } message: {
+                    Text("Your rounds stay on this iPhone. Sign in again to see them.")
+                }
+        } header: { Text("Account") } footer: {
+            Text("The account is kept on this iPhone only. Email verification and sync come with the \(AppConstants.displayName) server.")
+        }
     }
 }
 

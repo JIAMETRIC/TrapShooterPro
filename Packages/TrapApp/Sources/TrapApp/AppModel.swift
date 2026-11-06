@@ -14,6 +14,7 @@ import TrapWeather
 final class AppModel: LifecycleParticipant {
     let record: RecordModel
     let weather: WeatherModel
+    let auth: AuthModel
     let lifecycle = LifecycleCoordinator()
     let power = PowerMonitor()
     let network = NetworkMonitor()
@@ -47,13 +48,14 @@ final class AppModel: LifecycleParticipant {
         notifier = LocalNotifier()
         record = RecordModel(repository: repository, timer: timer, settings: settings)
         weather = WeatherModel()
+        auth = AuthModel(service: DeviceAuthService(store: KeychainStore()))
         lifecycle.add(self)
         MetricsCollector.shared.start()
     }
 
     /// Previews, demo mode and UI tests: an in-memory store and a scripted timer.
     init(repository: RoundRepository, timer: ShotTimerControlling, settings: AppSettings = AppSettings(),
-         defaults: UserDefaults = UserDefaults(suiteName: "preview") ?? .standard) {
+         defaults: UserDefaults = UserDefaults(suiteName: "preview") ?? .standard, account: Account? = nil) {
         self.settings = settings
         self.repository = repository
         container = nil
@@ -61,6 +63,7 @@ final class AppModel: LifecycleParticipant {
         notifier = SilentNotifier()
         record = RecordModel(repository: repository, timer: timer, settings: settings, defaults: defaults)
         weather = WeatherModel()
+        auth = AuthModel(service: DeviceAuthService(store: MemorySecretStore(), iterations: 1_000), defaults: defaults, signedIn: account)
         lifecycle.add(self)
     }
 

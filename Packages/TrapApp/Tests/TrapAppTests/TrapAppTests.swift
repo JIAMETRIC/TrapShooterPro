@@ -6,7 +6,7 @@ import TrapDesign
 
 final class TrapAppTests: XCTestCase {
     func testSectionsInTabOrder() {
-        XCTAssertEqual(AppSection.allCases.map(\.title), ["Record", "Timer", "Rounds", "Analysis", "Schemes", "Settings"])
+        XCTAssertEqual(AppSection.allCases.map(\.title), ["Home", "Record", "Timer", "Rounds", "Analysis", "Schemes", "Settings"])
     }
 
     /// Record + Timer and Rounds split beside the sidebar only when the master column gets a phone's width.

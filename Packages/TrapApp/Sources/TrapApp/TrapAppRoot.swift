@@ -16,7 +16,7 @@ public struct TrapAppRoot: View {
     init(app: AppModel) { _app = State(initialValue: app) }
 
     public var body: some View {
-        BreakpointReader { AppShell() }
+        BreakpointReader { AuthGate { AppShell() } }
             .environment(app)
             .environment(app.record)
             .lifecycle(app.lifecycle)
@@ -24,12 +24,13 @@ public struct TrapAppRoot: View {
     }
 }
 
-/// The six places of the app: tabs on iPhone, sidebar rows on iPad.
+/// The seven places of the app: the bottom nav on iPhone, sidebar rows on iPad.
 public enum AppSection: String, CaseIterable, Identifiable, Sendable {
-    case record, timer, rounds, analysis, schemes, settings
+    case home, record, timer, rounds, analysis, schemes, settings
     public var id: String { rawValue }
     public var title: String {
         switch self {
+        case .home: return "Home"
         case .record: return "Record"
         case .timer: return "Timer"
         case .rounds: return "Rounds"
@@ -40,6 +41,7 @@ public enum AppSection: String, CaseIterable, Identifiable, Sendable {
     }
     public var symbol: String {
         switch self {
+        case .home: return "house"
         case .record: return "square.grid.3x3"
         case .timer: return "stopwatch"
         case .rounds: return "list.bullet.rectangle"
@@ -56,11 +58,11 @@ public enum AppSection: String, CaseIterable, Identifiable, Sendable {
 struct AppShell: View {
     @Environment(\.breakpoint) private var breakpoint
     @Environment(AppModel.self) private var app
-    @AppStorage(AppState.sectionKey) private var selectedRaw = AppSection.record.rawValue
+    @AppStorage(AppState.sectionKey) private var selectedRaw = AppSection.home.rawValue
     @State private var columns = NavigationSplitViewVisibility.all
 
     private var selection: Binding<AppSection> {
-        Binding(get: { AppSection(rawValue: selectedRaw) ?? .record }, set: { selectedRaw = $0.rawValue })
+        Binding(get: { AppSection(rawValue: selectedRaw) ?? .home }, set: { selectedRaw = $0.rawValue })
     }
 
     var body: some View {
@@ -91,7 +93,8 @@ struct AppShell: View {
 }
 
 /// iPhone: one navigation stack per place under `BWBottomNav`. A place is built the first time it is opened and then
-/// kept, so each keeps its scroll position and pushed screens as a tab would. Schemes and Settings share the More slot.
+/// kept, so each keeps its scroll position and pushed screens as a tab would. Analysis, Schemes and Settings share the
+/// More slot.
 /// The bar steps aside while the keyboard is up.
 @MainActor
 private struct PhoneShell: View {
@@ -99,8 +102,8 @@ private struct PhoneShell: View {
     @State private var opened: Set<AppSection> = []
     @State private var keyboardUp = false
 
-    private static let main: [AppSection] = [.record, .timer, .rounds, .analysis]
-    private static let more: [AppSection] = [.schemes, .settings]
+    private static let main: [AppSection] = [.home, .record, .timer, .rounds]
+    private static let more: [AppSection] = [.analysis, .schemes, .settings]
 
     var body: some View {
         ZStack {
@@ -164,6 +167,7 @@ struct SectionScreen: View {
 
     var body: some View {
         switch section {
+        case .home: HomeScreen()
         case .record: AdaptiveSplit { RecordScreen() } detail: { TimerScreen() }
         case .timer: TimerScreen()
         case .rounds: RoundsScreen()
