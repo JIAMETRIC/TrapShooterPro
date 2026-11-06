@@ -195,3 +195,13 @@ the one product through an `XCLocalSwiftPackageReference`. Reason: a hand‑main
 instead of one per file, the UI compiles and tests in CI like any package (`xcodebuild -scheme TrapApp test`), and the
 hybrid sources leave the target in one edit. Consequence: `public` on what the app target touches (`TrapAppRoot`
 only); everything else stays internal and `@testable`.
+
+**ADR‑018 Sign-in on the device until there is a server (amends ADR‑014).** The CLAY NOVA Phase 1 spec asks for sign-in,
+registration and roles. Without a backend, `DeviceAuthService` keeps accounts on the iPhone: a salted PBKDF2‑SHA256 hash
+(600,000 rounds) in the Keychain (`WhenUnlockedThisDeviceOnly`, never synced), five wrong passwords lock the account for
+30 s doubling to 15 min, an unknown email costs the same work as a wrong password, and the session id lives in
+UserDefaults so it ends with the app. Nobody can take a role above athlete: a coach role is only *requested* with an
+invitation code, and administrator is never offered. Forgot password removes the sign-in from the device after Face ID,
+Touch ID or the passcode; rounds are never tied to or removed with an account. The screens talk to the `AuthService`
+protocol only, so a server implementation (email verification, OTP, Sign in with Apple, sync) replaces the device one
+without touching them. Reason: the owner chose the full Phase 1 UI now (6 Nov 2026) while keeping no network at launch.

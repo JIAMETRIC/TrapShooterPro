@@ -18,7 +18,7 @@ reference in `Tools/golden/reference/`; it is never shipped or extended. Progres
 | Layer | Path | Status |
 |---|---|---|
 | App target | `TrapShooterPro/` | `@main` entry, assets, privacy manifest; links `TrapApp` |
-| Screens, view models, timing flow | `Packages/TrapApp` | written: Record, Timer, Rounds, Analysis, Schemes, Settings; `TimingFlow` ports the 7.0.7 range flow; `RecordFlowTests` |
+| Screens, view models, timing flow | `Packages/TrapApp` | written: Sign in, Create account, Home, Record, Timer, Rounds, Analysis, Schemes, Settings; `TimingFlow` ports the 7.0.7 range flow; `RecordFlowTests` |
 | Shot detector, mic engine, recorder | `Packages/ShotTimer` (detector and recorder are the validated 7.0.7 sources, unchanged; `TimerSession` replaced `MicBridge`) | written, tested in CI; device checks pending |
 | Pure logic | `Packages/TrapCore` | written, golden‑tested against the JavaScript (incl. trap analysis) |
 | Design system | `Packages/TrapDesign` | written |
@@ -44,8 +44,8 @@ reference in `Tools/golden/reference/`; it is never shipped or extended. Progres
   `TimingFlow`, the pure port of the page's live timing. The app target holds only `TrapShooterProApp.swift`.
 - **TrapData** holds SwiftData models mirroring `Round`, autosave on every entry, a full‑library JSON backup/restore and a
   one‑time importer for 7.x documents. Recordings stay in `Documents/Recordings` so the Files app shows them.
-- **UI**: the theme's bottom nav (`BWBottomNav`) on iPhone (Record, Timer, Rounds, Analysis, and a More menu for
-  Schemes and Settings), `NavigationSplitView` with an ink sidebar on iPad. Views are thin; logic lives in TrapCore and `@Observable` models. Everything styled with `TrapDesign`
+- **UI**: `AuthGate` shows Sign in until someone is signed in. The theme's bottom nav (`BWBottomNav`) on iPhone (Home,
+  Record, Timer, Rounds, and a More menu for Analysis, Schemes and Settings), `NavigationSplitView` with an ink sidebar on iPad. Views are thin; logic lives in TrapCore and `@Observable` models. Everything styled with `TrapDesign`
   tokens (`BW.*`, `BWFont`, `BWMetrics`, `.bwCard()`, `.bwPrimary` …). No hard‑coded colours, sizes or fonts in views.
 - **Interchange stays compatible**: document v2 JSON and the CSV column layout are the export formats. Changing them
   breaks the coach's tooling and the golden tests.
@@ -63,7 +63,9 @@ reference in `Tools/golden/reference/`; it is never shipped or extended. Progres
 2. **Golden tests gate TrapCore.** Any change to rules, schemes, codec, break distance, CSV or analysis must keep
    `swift test` green against `Packages/TrapCore/Tests/TrapCoreTests/Fixtures`. Regenerate fixtures only when the
    JavaScript reference itself changes: `node Tools/golden/generate.js Tools/golden/reference/index-7.0.7.html Packages/TrapCore/Tests/TrapCoreTests/Fixtures`.
-3. **No accounts, no network at launch.** No sign‑in, no analytics, no third‑party SDKs. The only network call is the
+3. **No server accounts, no network at launch.** Sign‑in and Create account exist (CLAY NOVA Phase 1) but run on the
+   device only through `DeviceAuthService` (ADR‑018): password hash in the Keychain, nothing sent anywhere; a server
+   `AuthService` comes later. No analytics, no third‑party SDKs. The only network call is the
    optional Open‑Meteo weather fill through `TrapWeather`, gated by `NetworkMonitor` (no automatic fetch in Low Data
    Mode), and the app must work with it failing. No remote push; local notifications only, permission never at launch.
    The timer stops when the app goes to background; there is no background audio mode (ADR‑010).
@@ -87,7 +89,7 @@ reference in `Tools/golden/reference/`; it is never shipped or extended. Progres
 13. **Log with `TrapLog`**, round data as `privacy: .private`; add a signpost when touching anything with a budget in
     `docs/performance.md`. No third‑party analytics or crash SDKs: MetricKit and the support bundle cover it.
 14. **Queries, not full loads, for lists.** `fetchSummaries` (columns, filter, paging) for the Rounds list;
-    `fetchAll` only for Analysis and exports; `saveMany` for anything that writes more than one round.
+    `fetchAll` only for Analysis, Home and exports; `saveMany` for anything that writes more than one round.
 
 ## Build, test, run
 

@@ -2,7 +2,11 @@
 
 *Effective 22 October 2026 · applies to TrapShoot (TrapShooterPro) 8.0 and later for iPhone and iPad*
 
-**TrapShoot collects no data.** There is no account, no server, no analytics and no advertising.
+**TrapShoot collects no data.** There is no server, no analytics and no advertising.
+
+- **Account**: your name, email, mobile number, country, date of birth and role are kept on this device only. The
+  password itself is never stored: only a salted hash, in the device Keychain, which is not synced to other devices.
+  Nothing about the account is sent anywhere.
 
 - **Rounds, settings and round audio** stay on your iPhone or iPad. They leave it only when you share or export a file
   yourself (scorecard, CSV, backup, round audio, diagnostics).
