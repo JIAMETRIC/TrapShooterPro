@@ -202,6 +202,8 @@ registration and roles. Without a backend, `DeviceAuthService` keeps accounts on
 30 s doubling to 15 min, an unknown email costs the same work as a wrong password, and the session id lives in
 UserDefaults so it ends with the app. Nobody can take a role above athlete: a coach role is only *requested* with an
 invitation code, and administrator is never offered. Forgot password removes the sign-in from the device after Face ID,
-Touch ID or the passcode; rounds are never tied to or removed with an account. The screens talk to the `AuthService`
+Touch ID or the passcode; rounds are never tied to or removed with an account. Sign-in is optional (App Store guideline
+5.1.1: no account-based features yet): "Continue without an account" is remembered like a session, and Settings offers
+Delete account (5.1.1(v)). The screens talk to the `AuthService`
 protocol only, so a server implementation (email verification, OTP, Sign in with Apple, sync) replaces the device one
 without touching them. Reason: the owner chose the full Phase 1 UI now (6 Nov 2026) while keeping no network at launch.

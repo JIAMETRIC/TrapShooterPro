@@ -44,7 +44,8 @@ reference in `Tools/golden/reference/`; it is never shipped or extended. Progres
   `TimingFlow`, the pure port of the page's live timing. The app target holds only `TrapShooterProApp.swift`.
 - **TrapData** holds SwiftData models mirroring `Round`, autosave on every entry, a full‑library JSON backup/restore and a
   one‑time importer for 7.x documents. Recordings stay in `Documents/Recordings` so the Files app shows them.
-- **UI**: `AuthGate` shows Sign in until someone is signed in. The theme's bottom nav (`BWBottomNav`) on iPhone (Home,
+- **UI**: `AuthGate` shows Sign in until someone signs in or taps "Continue without an account" (sign‑in is optional,
+  App Store guideline 5.1.1; Settings → Account → Delete account removes it). The theme's bottom nav (`BWBottomNav`) on iPhone (Home,
   Record, Timer, Rounds, and a More menu for Analysis, Schemes and Settings), `NavigationSplitView` with an ink sidebar on iPad. Views are thin; logic lives in TrapCore and `@Observable` models. Everything styled with `TrapDesign`
   tokens (`BW.*`, `BWFont`, `BWMetrics`, `.bwCard()`, `.bwPrimary` …). No hard‑coded colours, sizes or fonts in views.
 - **Interchange stays compatible**: document v2 JSON and the CSV column layout are the export formats. Changing them
