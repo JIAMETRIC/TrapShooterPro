@@ -13,6 +13,7 @@ public enum TrapLog {
     public static let data = Logger(subsystem: subsystem, category: "data")
     public static let network = Logger(subsystem: subsystem, category: "network")
     public static let ui = Logger(subsystem: subsystem, category: "ui")
+    public static let auth = Logger(subsystem: subsystem, category: "auth")
 
     /// Signposts for Instruments (Time Profiler, Points of Interest): timer start, engine restart, round save, export.
     public static let signposter = OSSignposter(subsystem: subsystem, category: "performance")
