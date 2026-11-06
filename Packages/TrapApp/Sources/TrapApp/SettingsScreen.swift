@@ -55,7 +55,10 @@ private struct SettingBinding {
 @MainActor
 private struct AccountSection: View {
     @Environment(AppModel.self) private var app
-    @State private var confirm = false
+    @State private var confirmSignOut = false
+    @State private var confirmDelete = false
+    @State private var error: DisplayError?
+
     var body: some View {
         Section {
             if let a = app.auth.account {
@@ -69,16 +72,29 @@ private struct AccountSection: View {
                 if !a.mobile.isEmpty { LabeledContent("Mobile", value: a.mobile) }
                 LabeledContent("Country", value: a.countryName)
                 LabeledContent("Role", value: a.requestedRole.map { "\(a.role.title), \($0.title.lowercased()) pending" } ?? a.role.title)
+                Button("Sign out") { confirmSignOut = true }
+                    .confirmationDialog("Sign out?", isPresented: $confirmSignOut, titleVisibility: .visible) {
+                        Button("Sign out", role: .destructive) { app.auth.signOut() }
+                        Button("Cancel", role: .cancel) {}
+                    } message: {
+                        Text("Your rounds stay on this iPhone.")
+                    }
+                Button("Delete account", role: .destructive) { confirmDelete = true }
+                    .confirmationDialog("Delete your account?", isPresented: $confirmDelete, titleVisibility: .visible) {
+                        Button("Delete account", role: .destructive) {
+                            Task { error = await app.auth.deleteAccount() }
+                        }
+                        Button("Cancel", role: .cancel) {}
+                    } message: {
+                        Text("The account and its sign-in are removed from this iPhone. Your rounds, settings and recordings stay.")
+                    }
+                if let error { MessageLine(error: error) }
+            } else {
+                Text("You are using \(AppConstants.displayName) without an account.")
+                Button("Sign in or create an account") { app.auth.signOut() }
             }
-            Button("Sign out", role: .destructive) { confirm = true }
-                .confirmationDialog("Sign out?", isPresented: $confirm, titleVisibility: .visible) {
-                    Button("Sign out", role: .destructive) { app.auth.signOut() }
-                    Button("Cancel", role: .cancel) {}
-                } message: {
-                    Text("Your rounds stay on this iPhone. Sign in again to see them.")
-                }
         } header: { Text("Account") } footer: {
-            Text("The account is kept on this iPhone only. Email verification and sync come with the \(AppConstants.displayName) server.")
+            Text("Accounts are optional and kept on this iPhone only. Email verification and sync come with the \(AppConstants.displayName) server.")
         }
     }
 }

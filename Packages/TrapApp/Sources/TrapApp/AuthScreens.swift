@@ -15,12 +15,13 @@ struct AuthGate<Content: View>: View {
             switch app.auth.state {
             case .restoring: SplashView().task { await app.auth.restore() }
             case .signedOut: NavigationStack { SignInScreen() }
-            case .signedIn: content
+            case .signedIn, .guest: content
             }
         }
         .animation(BWMotion.standard, value: app.auth.state)
         .onChange(of: app.auth.account, initial: true) { _, a in
-            guard let a else { return }
+            // demo mode writes nothing to the real settings
+            guard let a, !DemoMode.isOn else { return }
             // the shooter's name ends every session id; take it from the account when Settings has none
             app.update { s in
                 if s.profile.name.isEmpty { s.profile.name = a.fullName }
@@ -138,6 +139,10 @@ struct SignInScreen: View {
                 }
                 .buttonStyle(.bwSecondary)
                 .accessibilityIdentifier("signin.create")
+                Button("Continue without an account") { app.auth.continueWithoutAccount() }
+                    .font(BWFont.secondary.weight(.semibold))
+                    .frame(maxWidth: .infinity, minHeight: BWMetrics.actionHeight)
+                    .accessibilityIdentifier("signin.guest")
             }
             .frame(maxWidth: .infinity)
 
@@ -415,8 +420,6 @@ enum LegalDocument: String, Identifiable {
     case privacy, terms
     var id: String { rawValue }
     var title: String { self == .privacy ? "Privacy policy" : "Terms of service" }
-    /// The terms are a draft until the owner's final text replaces them.
-    var isDraft: Bool { self == .terms }
     var paragraphs: [String] {
         switch self {
         case .privacy:
@@ -432,7 +435,7 @@ enum LegalDocument: String, Identifiable {
                 "\(AppConstants.displayName) is a training tool for Olympic Trap. Scores and times recorded in the app are not official results.",
                 "You are responsible for the safe handling of firearms and for following the rules of your range and federation.",
                 "Your data stays on your device. You can export or delete it at any time.",
-                "This text is a draft and will be replaced by the final terms before release."
+                "Questions: jiametric@gmail.com"
             ]
         }
     }
@@ -445,7 +448,6 @@ private struct LegalSheet: View {
     var body: some View {
         NavigationStack {
             AuthPage {
-                if document.isDraft { BWPill("Draft", status: BW.warning, uppercase: true) }
                 ForEach(document.paragraphs, id: \.self) { p in
                     Text(p).font(BWFont.body).foregroundStyle(BW.text)
                 }
