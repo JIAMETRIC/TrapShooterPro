@@ -328,6 +328,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "TrapShoot";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "TrapShoot asks for Face ID only when you reset your sign-in on this iPhone, to confirm it is you.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "TrapShoot reads your location once, when you ask for the range weather, to fill in temperature, humidity, sky and wind for the round.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "TrapShoot listens through the microphone or a receiver such as the DJI Mic Mini 2 for the call and the shots, to time each target. Audio stays on this iPhone.";
 				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
@@ -363,6 +364,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "TrapShoot";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "TrapShoot asks for Face ID only when you reset your sign-in on this iPhone, to confirm it is you.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "TrapShoot reads your location once, when you ask for the range weather, to fill in temperature, humidity, sky and wind for the round.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "TrapShoot listens through the microphone or a receiver such as the DJI Mic Mini 2 for the call and the shots, to time each target. Audio stays on this iPhone.";
 				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;

@@ -27,7 +27,8 @@ let package = Package(
             "TrapApp",
             .product(name: "TrapCore", package: "TrapCore"),
             .product(name: "TrapData", package: "TrapData"),
-            .product(name: "ShotTimer", package: "ShotTimer")
+            .product(name: "ShotTimer", package: "ShotTimer"),
+            .product(name: "TrapPlatform", package: "TrapPlatform")
         ])
     ]
 )

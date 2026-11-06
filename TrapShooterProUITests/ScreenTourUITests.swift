@@ -179,7 +179,7 @@ final class ScreenTourUITests: XCTestCase {
 
     func test06Schemes() {
         begin("06-Schemes", section: "schemes")
-        let more = app.buttons["nav.more"]                         // the bottom nav's More slot holds Schemes and Settings
+        let more = app.buttons["nav.more"]                         // the bottom nav's More slot holds Analysis, Schemes and Settings
         if more.waitForExistence(timeout: 3) {
             more.tap(); wait(1)
             shot("more-menu")
