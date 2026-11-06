@@ -65,7 +65,7 @@ private struct IdentityCard: View {
         let account = app.auth.account
         let round = app.record.round
         HStack(alignment: .center, spacing: BWMetrics.s4) {
-            Text(account?.initials ?? "?")
+            Text(account?.initials ?? Account.initials(of: app.settings.profile.name))
                 .font(BWFont.display(size: 28)).foregroundStyle(BW.onAccent)
                 .frame(width: 64, height: 64)
                 .background(BW.accentFill, in: Circle())
@@ -73,10 +73,14 @@ private struct IdentityCard: View {
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: BWMetrics.s1) {
                 Text(Self.greeting()).font(BWFont.secondary).foregroundStyle(BW.textSecondary)
-                Text(account?.firstName ?? app.settings.profile.name).bwDisplay(.title).foregroundStyle(BW.text)
+                Text(account?.firstName ?? Self.firstWord(app.settings.profile.name)).bwDisplay(.title).foregroundStyle(BW.text)
                     .lineLimit(1).minimumScaleFactor(0.6)
                 HStack(spacing: BWMetrics.s2) {
-                    BWPill(account?.role.title ?? AccountRole.athlete.title, status: BW.accentStatus, uppercase: true)
+                    if let account {
+                        BWPill(account.role.title, status: BW.accentStatus, uppercase: true)
+                    } else {
+                        BWPill("No account", status: BW.neutral, uppercase: true)
+                    }
                     if let r = account?.requestedRole {
                         BWPill("\(r.title) pending", status: BW.warning, dot: true)
                     }
@@ -94,6 +98,11 @@ private struct IdentityCard: View {
             }
             .accessibilityElement(children: .combine)
         }
+    }
+
+    /// The first word of the Settings name, or "Shooter" when there is none.
+    static func firstWord(_ name: String) -> String {
+        name.split(separator: " ").first.map(String.init) ?? "Shooter"
     }
 
     static func greeting(now: Date = Date(), calendar: Calendar = .current) -> String {

@@ -134,6 +134,49 @@ final class AuthRulesTests: XCTestCase {
         XCTAssertEqual(reopened.state, .signedOut)
         XCTAssertNil(defaults.string(forKey: AuthModel.sessionKey))
     }
+
+    /// Guideline 5.1.1: the app works without an account, and that choice survives a relaunch.
+    @MainActor
+    func testContinueWithoutAccount() async throws {
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: "auth-guest-test"))
+        defaults.removePersistentDomain(forName: "auth-guest-test")
+        let service = DeviceAuthService(store: MemorySecretStore(), iterations: 1_000)
+        let model = AuthModel(service: service, defaults: defaults, now: { self.now })
+        model.continueWithoutAccount()
+        XCTAssertEqual(model.state, .guest)
+        XCTAssertNil(model.account)
+        XCTAssertEqual(AuthModel(service: service, defaults: defaults).state, .guest)
+
+        // signing in later ends guest mode
+        let err = await model.register(valid())
+        XCTAssertNil(err)
+        XCTAssertFalse(defaults.bool(forKey: AuthModel.guestKey))
+        model.signOut()
+        XCTAssertEqual(AuthModel(service: service, defaults: defaults).state, .signedOut)
+    }
+
+    /// Guideline 5.1.1(v): an account made in the app can be deleted in the app.
+    @MainActor
+    func testDeleteAccount() async throws {
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: "auth-delete-test"))
+        defaults.removePersistentDomain(forName: "auth-delete-test")
+        let service = DeviceAuthService(store: MemorySecretStore(), iterations: 1_000)
+        let model = AuthModel(service: service, defaults: defaults, now: { self.now })
+        _ = await model.register(valid())
+        let id = try XCTUnwrap(model.account?.id)
+        let err = await model.deleteAccount()
+        XCTAssertNil(err)
+        XCTAssertEqual(model.state, .signedOut)
+        let gone = try await service.account(id: id)
+        XCTAssertNil(gone)
+        let again = await model.signIn(email: "smyugan@example.com", password: "trap2026")
+        XCTAssertNotNil(again)                                             // the account is really gone
+    }
+
+    func testInitials() {
+        XCTAssertEqual(Account.initials(of: "Mohammad Tajudeen Khan"), "MT")
+        XCTAssertEqual(Account.initials(of: "  "), "?")
+    }
 }
 
 final class HomeStatsTests: XCTestCase {

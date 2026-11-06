@@ -45,8 +45,10 @@ public struct Account: Codable, Equatable, Identifiable, Sendable {
     /// The first word of the name, for the greeting.
     public var firstName: String { fullName.split(separator: " ").first.map(String.init) ?? fullName }
     /// Up to two initials, for the avatar.
-    public var initials: String {
-        let parts = fullName.split(separator: " ").prefix(2).compactMap(\.first)
+    public var initials: String { Self.initials(of: fullName) }
+    /// Up to two initials of `name`; "?" for none.
+    public static func initials(of name: String) -> String {
+        let parts = name.split(separator: " ").prefix(2).compactMap(\.first)
         return parts.isEmpty ? "?" : String(parts).uppercased()
     }
     /// The country's name in the phone's language.
@@ -347,11 +349,13 @@ public actor DeviceAuthService: AuthService {
 // MARK: Model
 
 /// The signed-in state for the screens. The session (the account id) lives in UserDefaults, so it ends when the app is
-/// deleted, while the account itself stays in the Keychain.
+/// deleted, while the account itself stays in the Keychain. Sign-in is optional (App Store guideline 5.1.1: the
+/// account has no server features yet), so a shooter can continue without one; that choice is remembered too.
 @MainActor
 @Observable
 public final class AuthModel {
-    public enum State: Equatable { case restoring, signedOut, signedIn(Account) }
+    /// `guest`: using the app without an account.
+    public enum State: Equatable { case restoring, signedOut, guest, signedIn(Account) }
 
     public private(set) var state: State
     public private(set) var busy = false
@@ -360,6 +364,7 @@ public final class AuthModel {
     @ObservationIgnored private let defaults: UserDefaults
     @ObservationIgnored private let now: () -> Date
     static let sessionKey = "auth.accountID"
+    static let guestKey = "auth.guest"
 
     public var account: Account? { if case .signedIn(let a) = state { return a } else { return nil } }
 
@@ -370,8 +375,14 @@ public final class AuthModel {
         if let a = signedIn {
             state = .signedIn(a)
         } else {
-            state = defaults.string(forKey: Self.sessionKey) == nil ? .signedOut : .restoring
+            state = Self.launchState(defaults)
         }
+    }
+
+    private static func launchState(_ defaults: UserDefaults) -> State {
+        if defaults.string(forKey: sessionKey) != nil { return .restoring }
+        if defaults.bool(forKey: guestKey) { return .guest }
+        return .signedOut
     }
 
     /// Reopens the last session at launch.
@@ -394,10 +405,31 @@ public final class AuthModel {
         await run { try await self.service.register(form, now: self.now()) }
     }
 
+    /// Uses the app without an account; remembered across launches.
+    func continueWithoutAccount() {
+        defaults.set(true, forKey: Self.guestKey)
+        state = .guest
+    }
+
+    /// Back to Sign in, from an account or from using the app without one.
     func signOut() {
         defaults.removeObject(forKey: Self.sessionKey)
+        defaults.removeObject(forKey: Self.guestKey)
         state = .signedOut
         TrapLog.auth.notice("signed out")
+    }
+
+    /// Settings → Delete account (App Store guideline 5.1.1(v)): removes the signed-in account from this iPhone and
+    /// signs out. Rounds, settings and recordings stay.
+    func deleteAccount() async -> DisplayError? {
+        guard let a = account else { return nil }
+        do {
+            try await service.removeAccount(email: a.email)
+        } catch {
+            return DisplayError(any: error)
+        }
+        signOut()
+        return nil
     }
 
     /// Forgot password, while there is no server to send a reset link: after Face ID, Touch ID or the passcode, the
@@ -420,6 +452,7 @@ public final class AuthModel {
         do {
             let a = try await body()
             defaults.set(a.id, forKey: Self.sessionKey)
+            defaults.removeObject(forKey: Self.guestKey)
             state = .signedIn(a)
             return nil
         } catch {

@@ -17,7 +17,8 @@ What is in the code, what is in App Store Connect, and the order to do it in.
 
 ## App Privacy answers (nutrition label)
 
-Everything stays on the device. Answer **"Data Not Collected"**. Location is used once for the weather fill and is
+Everything stays on the device. Answer **"Data Not Collected"**. The optional account (name, email, mobile, country,
+date of birth) is stored on the device only and never transmitted, so it is not "collected" either. Location is used once for the weather fill and is
 not stored or sent anywhere except as latitude/longitude to Open‑Meteo's public API, rounded to four decimals; that is
 not "collection" by Apple's definition because it is not linked to the user or retained. State this in the review notes.
 
@@ -25,7 +26,9 @@ not "collection" by Apple's definition because it is not linked to the user or r
 
 > TrapShoot is a shot timer and scorecard for Olympic Trap, an ISSF/Olympic shotgun discipline. The microphone is used
 > only while the shooter taps Start, to time the voice call and the shots of a clay target; nothing is uploaded. No account
-> is needed; all data stays on the device and can be exported by the user as CSV, PDF or a backup file. Location is
+> is needed: tap "Continue without an account" on the first screen. Creating an account is optional, stays on the device
+> (no server), and the account can be deleted in Settings → Account → Delete account. All data stays on the device and
+> can be exported by the user as CSV, PDF or a backup file. Location is
 > optional and used once per round to pre‑fill the weather from Open‑Meteo. To test the timer without a range: on
 > Record, type any range name, pick Field 1 and Sky, enter a temperature and humidity (or tap Weather), tap Start round;
 > then on Timer tap Start timer, say "pull" loudly and clap twice within a second. The readout shows the call‑to‑clap
@@ -37,7 +40,7 @@ not "collection" by Apple's definition because it is not linked to the user or r
 - **Keywords**: trap,olympic trap,shotgun,clay,shooting,timer,scorecard,ISSF,bunker,score
 - **Description**: lead with the timer accuracy (call to shot in milliseconds, external receivers such as DJI Mic Mini 2),
   then the 25‑target scorecard with the station rule, break distance, analysis by trap and station, and exports. Say
-  plainly: no account, works offline, your data stays on your phone.
+  plainly: no account needed, works offline, your data stays on your phone.
 - **Screenshots**: 6.9" (iPhone 17 Pro Max) and 13" iPad required; light and dark; Record, Timer, Analysis, Schemes.
 - **Age rating**: answer the questionnaire honestly; sport shooting with no violence content rates 4+.
 - **Support URL and privacy policy URL**: `docs/support.md` and `docs/privacy.md` in this public repository
